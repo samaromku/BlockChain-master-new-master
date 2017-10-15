@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">BlockChain</string>
+    <string name="time">Время</string>
+    <string name="actual_price">Текущая цена $</string>
+    <string name="date">Календарь</string>
+    <string name="settings">Настройки</string>
+    <string name="timeSpot">Интервал:</string>
+    <string name="minutes">%1$s мин.</string>
+    <string name="demo_count">Демо счет:</string>
+    <string name="dollar_sign">$</string>
+    <string name="bitcoin_sign">B</string>
+</resources>
