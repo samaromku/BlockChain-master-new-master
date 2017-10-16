@@ -31,6 +31,11 @@ public class BaseRepository<T extends RealmObject> {
         realmInstance().close();
     }
 
+    public void addAll(List<T> items) {
+        realmInstance().executeTransaction(realm -> realm.insertOrUpdate(items));
+        realmInstance().close();
+    }
+
     public void removeItem(T item){
         realmInstance().executeTransaction(realm -> item.deleteFromRealm());
         realmInstance().close();

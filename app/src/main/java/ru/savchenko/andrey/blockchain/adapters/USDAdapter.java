@@ -3,6 +3,7 @@ package ru.savchenko.andrey.blockchain.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,8 +19,10 @@ import ru.savchenko.andrey.blockchain.storage.Utils;
 
 import static ru.savchenko.andrey.blockchain.storage.Const.BAD;
 import static ru.savchenko.andrey.blockchain.storage.Const.BEST;
+import static ru.savchenko.andrey.blockchain.storage.Const.BUY_OPERATION;
 import static ru.savchenko.andrey.blockchain.storage.Const.GOOD;
 import static ru.savchenko.andrey.blockchain.storage.Const.NORMAL;
+import static ru.savchenko.andrey.blockchain.storage.Const.SELL_OPERATION;
 import static ru.savchenko.andrey.blockchain.storage.Const.TERRIBLE;
 import static ru.savchenko.andrey.blockchain.storage.Const.WORST;
 
@@ -38,6 +41,7 @@ public class USDAdapter extends ru.savchenko.andrey.blockchain.base.BaseAdapter<
         @BindView(R.id.tvActualPrice)TextView tvActualPrice;
         @BindView(R.id.tvTime)TextView tvTime;
         @BindView(R.id.llExchange)LinearLayout llExchange;
+        @BindView(R.id.ivBuyOrSell)ImageView ivBuyOrSell;
 
         public USDViewHolder(View itemView) {
             super(itemView);
@@ -49,6 +53,16 @@ public class USDAdapter extends ru.savchenko.andrey.blockchain.base.BaseAdapter<
             super.bind(usd, clickListener);
             tvActualPrice.setText(String.valueOf(usd.getLast()));
             tvTime.setText(new SimpleDateFormat("yyyy.MM.dd HH:mm").format(usd.getDate()));
+            int status = usd.getBuyOrSell();
+             if(status==SELL_OPERATION){
+                ivBuyOrSell.setVisibility(View.VISIBLE);
+                ivBuyOrSell.setBackgroundResource(R.drawable.sell);
+            }else if(status==BUY_OPERATION){
+                ivBuyOrSell.setVisibility(View.VISIBLE);
+                ivBuyOrSell.setBackgroundResource(R.drawable.buy);
+            }else {
+                ivBuyOrSell.setVisibility(View.INVISIBLE);
+            }
 
             switch (Utils.getProfit(usd)){
                 case BEST:

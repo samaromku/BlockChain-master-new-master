@@ -1,10 +1,13 @@
 package ru.savchenko.andrey.blockchain.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -27,13 +30,14 @@ import ru.savchenko.andrey.blockchain.dialogs.DateDialog;
 import ru.savchenko.andrey.blockchain.dialogs.SettingsDialog;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.interfaces.OnItemClickListener;
+import ru.savchenko.andrey.blockchain.interfaces.OnRefreshAdapter;
 import ru.savchenko.andrey.blockchain.interfaces.SetDataFromDialog;
 import ru.savchenko.andrey.blockchain.network.RequestManager;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
 
 import static ru.savchenko.andrey.blockchain.storage.Const.USD_ID;
 
-public class MainActivity extends BaseActivity implements OnItemClickListener, SetDataFromDialog {
+public class MainActivity extends BaseActivity implements OnItemClickListener, SetDataFromDialog, OnRefreshAdapter {
     @BindView(R.id.constraintMain)
     LinearLayout constraintMain;
     @BindView(R.id.rvExchange)
@@ -50,6 +54,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        new BaseRepository<>(USD.class).addAll(new USDRepository().getUsdStartList());
         initRv();
         int usdId = getIntent().getIntExtra(USD_ID, 0);
 
@@ -86,8 +91,25 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
                 SettingsDialog settingsDialog = new SettingsDialog();
                 settingsDialog.show(getSupportFragmentManager(), "settings");
                 return true;
+            case R.id.nav_send:
+                sendMessage();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendMessage() {
+        List<USD>usds = new BaseRepository<>(USD.class).getAll();
+        String bigString = "";
+        for (int i = 0; i < usds.size(); i++) {
+            bigString = bigString + usds.get(i).addIntList() + "\n";
+        }
+        Log.i(TAG, "sendMessage: " + bigString);
+        Intent shareIntent = ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setText(bigString)
+                .getIntent();
+        startActivity(Intent.createChooser(shareIntent, "choose"));
     }
 
     private void initRv() {
@@ -105,6 +127,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
     private void startByOrSellDialog(Integer id){
         BuyOrSellDialog buyOrSellDialog = new BuyOrSellDialog();
         buyOrSellDialog.setUsd(new BaseRepository<>(USD.class).getItemById(id));
+        buyOrSellDialog.setOnRefreshAdapter(this);
         buyOrSellDialog.show(getSupportFragmentManager(), "buyOrSell");
     }
 
@@ -127,5 +150,10 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
                     adapter.setDataList(usds1);
                     adapter.notifyDataSetChanged();
                 });
+    }
+
+    @Override
+    public void refreshAdapter() {
+        adapter.notifyDataSetChanged();
     }
 }

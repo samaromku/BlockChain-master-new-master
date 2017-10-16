@@ -17,5 +17,7 @@ public interface Const {
     String SELL = "Продавай!";
     String WAIT = "Погоди пока";
     String USD_ID = "isdId";
-
+    int BUY_OPERATION = -1;
+    int SELL_OPERATION = 1;
+    int NO_OPERATION = 0;
 }

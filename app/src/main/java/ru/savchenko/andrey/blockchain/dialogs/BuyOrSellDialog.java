@@ -33,8 +33,12 @@ import ru.savchenko.andrey.blockchain.R;
 import ru.savchenko.andrey.blockchain.base.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
+import ru.savchenko.andrey.blockchain.interfaces.OnRefreshAdapter;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
 import ru.savchenko.andrey.blockchain.storage.Utils;
+
+import static ru.savchenko.andrey.blockchain.storage.Const.BUY_OPERATION;
+import static ru.savchenko.andrey.blockchain.storage.Const.SELL_OPERATION;
 
 /**
  * Created by savchenko on 14.10.17.
@@ -51,11 +55,17 @@ public class BuyOrSellDialog extends DialogFragment{
     private LineChartView chart;
     private LineChartData data;
     private MoneyCount moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
+    private OnRefreshAdapter onRefreshAdapter;
 
+    public void setOnRefreshAdapter(OnRefreshAdapter onRefreshAdapter) {
+        this.onRefreshAdapter = onRefreshAdapter;
+    }
 
     @OnClick(R.id.btnCancel)
     void sellUSD(){
         USD lastUsd = new USDRepository().getLastUSD();
+        lastUsd.setBuyOrSell(SELL_OPERATION);
+        onRefreshAdapter.refreshAdapter();
         Double usdToChange = Double.valueOf(etUSD.getText().toString());
         if(usdToChange>0) {
             Double btcValue = Double.valueOf(etBitcoin.getText().toString()) + usdToChange / lastUsd.getBuy();
@@ -72,6 +82,8 @@ public class BuyOrSellDialog extends DialogFragment{
     @OnClick(R.id.btnOk)
     void buyUSD(){
         USD lastUsd = new USDRepository().getLastUSD();
+        lastUsd.setBuyOrSell(BUY_OPERATION);
+        onRefreshAdapter.refreshAdapter();
         Double btcToChange = Double.valueOf(etBitcoin.getText().toString());
         if(btcToChange>0) {
             Double usdValue = Double.valueOf(etUSD.getText().toString()) + btcToChange * lastUsd.getSell();

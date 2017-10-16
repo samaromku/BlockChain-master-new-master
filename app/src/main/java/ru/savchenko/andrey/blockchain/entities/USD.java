@@ -7,12 +7,13 @@ import java.util.Date;
 
 import javax.annotation.Generated;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class USD extends RealmObject{
+public class USD extends RealmObject {
     @PrimaryKey
     private int id;
     @SerializedName("15m")
@@ -26,6 +27,18 @@ public class USD extends RealmObject{
     @SerializedName("symbol")
     private String mSymbol;
     private Date date;
+    private int buyOrSell;
+
+    public int getBuyOrSell() {
+        return buyOrSell;
+    }
+
+    public void setBuyOrSell(int buyOrSell) {
+        Realm.getDefaultInstance().executeTransaction(realm -> {
+            this.buyOrSell = buyOrSell;
+        });
+        Realm.getDefaultInstance().close();
+    }
 
     public Date getDate() {
         return date;
@@ -79,4 +92,43 @@ public class USD extends RealmObject{
         mSymbol = symbol;
     }
 
+
+    @Override
+    public String toString() {
+        return "USD{" +
+                "id=" + id +
+                ", m5m=" + m5m +
+                ", mBuy=" + mBuy +
+                ", mLast=" + mLast +
+                ", mSell=" + mSell +
+                ", mSymbol='" + mSymbol + '\'' +
+                ", date=" + date +
+                ", buyOrSell=" + buyOrSell +
+                '}';
+    }
+
+    public String addIntList() {
+        return "list.add(new USD("
+                + id + " , "
+                + m5m + " , "
+                + mBuy + " , "
+                + mLast + " , "
+                + mSell + " , "
+                + "\"" + mSymbol + "\"" +" , "
+                + "new Date(" + date.getTime() + "L)" +
+                "));";
+    }
+
+    public USD() {
+    }
+
+    public USD(int id, Double m5m, Double mBuy, Double mLast, Double mSell, String mSymbol, Date date) {
+        this.id = id;
+        this.m5m = m5m;
+        this.mBuy = mBuy;
+        this.mLast = mLast;
+        this.mSell = mSell;
+        this.mSymbol = mSymbol;
+        this.date = date;
+    }
 }

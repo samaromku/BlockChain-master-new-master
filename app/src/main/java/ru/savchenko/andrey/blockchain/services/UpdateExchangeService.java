@@ -60,7 +60,7 @@ public class UpdateExchangeService extends IntentService{
                     int usdId = new USDRepository().writeIdDbReturnInteger(exchange.getUSD());
                     sendNotify(exchange.getUSD(),usdId);
                 }, Throwable::printStackTrace);
-    }                 
+    }
 
     private int getInterval(){
         int interval = Prefs.getInterval();

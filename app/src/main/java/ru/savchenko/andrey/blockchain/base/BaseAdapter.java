@@ -1,6 +1,7 @@
 package ru.savchenko.andrey.blockchain.base;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import ru.savchenko.andrey.blockchain.interfaces.OnItemClickListener;
 public class BaseAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> {
     protected List<T>dataList;
     private OnItemClickListener clickListener;
+    public static final String TAG = "BaseAdapter";
 
     public void setClickListener(OnItemClickListener clickListener) {
         this.clickListener = clickListener;
@@ -32,6 +34,9 @@ public class BaseAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> {
     @Override
     public void onBindViewHolder(BaseViewHolder<T> holder, int position) {
         holder.bind(dataList.get(position), clickListener);
+        for (T t:dataList){
+            Log.i(TAG, "onBindViewHolder: " + t);
+        }
     }
 
     @Override
