@@ -1,4 +1,4 @@
-package ru.savchenko.andrey.blockchain.dialogs;
+package ru.savchenko.andrey.blockchain.dialogs.buyorsell;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -37,14 +37,11 @@ import ru.savchenko.andrey.blockchain.interfaces.OnRefreshAdapter;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
 import ru.savchenko.andrey.blockchain.storage.Utils;
 
-import static ru.savchenko.andrey.blockchain.storage.Const.BUY_OPERATION;
-import static ru.savchenko.andrey.blockchain.storage.Const.SELL_OPERATION;
-
 /**
  * Created by savchenko on 14.10.17.
  */
 
-public class BuyOrSellDialog extends DialogFragment{
+public class BuyOrSellDialog extends DialogFragment implements BuyOrSellView{
     @BindView(R.id.tvBuyOrSell)TextView tvBuyOrSell;
     @BindView(R.id.rlDiagram)RelativeLayout rlDiagram;
     @BindView(R.id.btnOk)Button btnOk;
@@ -56,46 +53,40 @@ public class BuyOrSellDialog extends DialogFragment{
     private LineChartData data;
     private MoneyCount moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
     private OnRefreshAdapter onRefreshAdapter;
+    private BuyOrSellPresenter presenter;
 
     public void setOnRefreshAdapter(OnRefreshAdapter onRefreshAdapter) {
         this.onRefreshAdapter = onRefreshAdapter;
     }
 
+    @Override
+    public void setTextUSD(String textUSD) {
+        etUSD.setText(textUSD);
+    }
+
+    @Override
+    public void setTextBTC(String textBTC) {
+        etBitcoin.setText(textBTC);
+    }
+
+    @Override
+    public void makeToast(String text) {
+        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void refreshAdapter() {
+        onRefreshAdapter.refreshAdapter();
+    }
+
     @OnClick(R.id.btnCancel)
     void sellUSD(){
-        USD lastUsd = new USDRepository().getLastUSD();
-        lastUsd.setBuyOrSell(SELL_OPERATION);
-        onRefreshAdapter.refreshAdapter();
-        Double usdToChange = Double.valueOf(etUSD.getText().toString());
-        if(usdToChange>0) {
-            Double btcValue = Double.valueOf(etBitcoin.getText().toString()) + usdToChange / lastUsd.getBuy();
-            Double restUsd = moneyCount.getUsdCount() - usdToChange;
-            etUSD.setText(String.valueOf(restUsd));
-            etBitcoin.setText(String.valueOf(btcValue));
-            moneyCount.setUsdCount(restUsd);
-            moneyCount.setBitCoinCount(btcValue);
-        }else {
-            Toast.makeText(getActivity(), "Недостаточно средств", Toast.LENGTH_SHORT).show();
-        }
+        presenter.sellUSD(etUSD.getText().toString(), etBitcoin.getText().toString(), true);
     }
     
     @OnClick(R.id.btnOk)
     void buyUSD(){
-        USD lastUsd = new USDRepository().getLastUSD();
-        lastUsd.setBuyOrSell(BUY_OPERATION);
-        onRefreshAdapter.refreshAdapter();
-        Double btcToChange = Double.valueOf(etBitcoin.getText().toString());
-        if(btcToChange>0) {
-            Double usdValue = Double.valueOf(etUSD.getText().toString()) + btcToChange * lastUsd.getSell();
-            Double restBtc = moneyCount.getBitCoinCount() - btcToChange;
-            etBitcoin.setText(String.valueOf(restBtc));
-            etUSD.setText(String.valueOf(usdValue));
-            moneyCount.setUsdCount(usdValue);
-            moneyCount.setBitCoinCount(restBtc);
-        }else {
-            Toast.makeText(getActivity(), "Недостаточно средств", Toast.LENGTH_SHORT).show();
-        }
-
+        presenter.sellUSD(etUSD.getText().toString(), etBitcoin.getText().toString(), false);
     }
 
     public void setUsd(USD usd) {
@@ -112,6 +103,7 @@ public class BuyOrSellDialog extends DialogFragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        presenter = new BuyOrSellPresenter(this);
         btnOk.setText("Продать B");
         btnCancel.setText("Продать $");
         tvBuyOrSell.setText(Utils.getBestAndWorstString(usd));

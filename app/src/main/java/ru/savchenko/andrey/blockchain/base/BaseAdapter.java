@@ -1,7 +1,6 @@
 package ru.savchenko.andrey.blockchain.base;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -34,9 +33,6 @@ public class BaseAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> {
     @Override
     public void onBindViewHolder(BaseViewHolder<T> holder, int position) {
         holder.bind(dataList.get(position), clickListener);
-        for (T t:dataList){
-            Log.i(TAG, "onBindViewHolder: " + t);
-        }
     }
 
     @Override

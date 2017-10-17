@@ -18,7 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".services.UpdateExchangeService"/>
+        <service android:name=".services.exchange.UpdateExchangeService"/>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package ru.savchenko.andrey.blockchain.services;
+package ru.savchenko.andrey.blockchain.services.exchange;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +23,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.savchenko.andrey.blockchain.R;
 import ru.savchenko.andrey.blockchain.activities.MainActivity;
+import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.network.RequestManager;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
@@ -35,15 +37,16 @@ import static ru.savchenko.andrey.blockchain.storage.Const.USD_ID;
  * Created by Andrey on 12.10.2017.
  */
 
-public class UpdateExchangeService extends IntentService{
+public class UpdateExchangeService extends IntentService implements ExchangeView {
     public static final String TAG = "UpdateExchangeService";
+    private ExchangePresenter presenter = new ExchangePresenter(this);
 
     public UpdateExchangeService() {
         super(TAG);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    public static Intent newIntent(Context context){
+    public static Intent newIntent(Context context) {
         return new Intent(context, UpdateExchangeService.class)
                 .addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
     }
@@ -51,28 +54,81 @@ public class UpdateExchangeService extends IntentService{
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.i(TAG, "onHandleIntent: " + getInterval());
+        intervalUserRemember();
+        intervalCheckLastThreeValues();
+    }
+
+    private void intervalCheckLastThreeValues() {
+        Observable.interval(5, TimeUnit.MINUTES)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    presenter.sellUSD();
+                });
+    }
+
+    @Override
+    public void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void intervalUserRemember() {
         Observable.interval(getInterval(), TimeUnit.MINUTES)
                 .flatMap(aLong -> RequestManager.getRetrofitService().getExchange())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe( exchange -> {
+                .subscribe(exchange -> {
                     int usdId = new USDRepository().writeIdDbReturnInteger(exchange.getUSD());
-                    sendNotify(exchange.getUSD(),usdId);
+                    sendNotify(exchange.getUSD(), usdId);
                 }, Throwable::printStackTrace);
     }
 
-    private int getInterval(){
+    private int getInterval() {
         int interval = Prefs.getInterval();
-        if(interval==0){
+        if (interval == 0) {
             return 15;
-        }else {
+        } else {
             return interval;
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void sendNotify(USD usd, int usdId){
+    @Override
+    public void showNotify(MoneyCount moneyCount) {
+//        Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, usdId);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        String title;
+        if(moneyCount.isBuyOrSell()){
+            title = "Покупка B";
+        }else {
+            title = "Продажа B";
+        }
+//        String title = Utils.getBestAndWorstString(usd);
+        String text = "$ ост:" + moneyCount.getUsdCount() + "\nB ост:" + moneyCount.getBitCoinCount();
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setSmallIcon(R.drawable.ic_monetization)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setAutoCancel(true)
+                .setVibrate(new long[]{1000, 1000})
+                .setLights(Color.WHITE, 3000, 3000)
+                .setSound(defaultSoundUri)
+//                .setContentIntent(pendingIntent)
+                ;
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void sendNotify(USD usd, int usdId) {
         Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, usdId);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
@@ -81,7 +137,7 @@ public class UpdateExchangeService extends IntentService{
         Log.i(TAG, text);
         String title = Utils.getBestAndWorstString(usd);
 
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
                 .setPriority(Notification.PRIORITY_MAX)
@@ -89,7 +145,7 @@ public class UpdateExchangeService extends IntentService{
                 .setContentTitle(title)
                 .setContentText(text)
                 .setAutoCancel(true)
-                .setVibrate(new long[] { 1000, 1000})
+                .setVibrate(new long[]{1000, 1000})
                 .setLights(Color.WHITE, 3000, 3000)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.Sort;
 import ru.savchenko.andrey.blockchain.base.BaseAdapter;
 import ru.savchenko.andrey.blockchain.base.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.USD;
@@ -77,6 +78,16 @@ public class USDRepository {
                 .intValue();
         realmInstance().close();
         return minLast;
+    }
+
+    public List<USD>getLastThreeValues(){
+        List<USD>usds = new ArrayList<>();
+        List<USD>all = realmInstance().where(USD.class).findAllSorted("id", Sort.DESCENDING);
+        realmInstance().close();
+        for (int i = 0; i < 3; i++) {
+            usds.add(all.get(i));
+        }
+        return usds;
     }
 
     public List<USD>getUsdStartList(){
@@ -156,6 +167,64 @@ public class USDRepository {
         list.add(new USD(73 , 5655.81 , 5656.3 , 5655.81 , 5655.31 , "$" , new Date(1508172290209L)));
         list.add(new USD(74 , 5673.05 , 5673.74 , 5673.05 , 5672.37 , "$" , new Date(1508175129882L)));
         list.add(new USD(75 , 5673.25 , 5674.06 , 5673.25 , 5672.45 , "$" , new Date(1508175218297L)));
+        list.add(new USD(76 , 5695.51 , 5696.1 , 5695.51 , 5694.92 , "$" , new Date(1508181148878L)));
+        list.add(new USD(77 , 5696.57 , 5697.28 , 5696.57 , 5695.86 , "$" , new Date(1508182010454L)));
+        list.add(new USD(78 , 5703.41 , 5704.17 , 5703.41 , 5702.65 , "$" , new Date(1508182910450L)));
+        list.add(new USD(79 , 5702.92 , 5703.52 , 5702.92 , 5702.32 , "$" , new Date(1508182919927L)));
+        list.add(new USD(80 , 5704.57 , 5704.86 , 5704.57 , 5704.28 , "$" , new Date(1508183020351L)));
+        list.add(new USD(81 , 5702.33 , 5703.41 , 5702.33 , 5701.25 , "$" , new Date(1508187099451L)));
+        list.add(new USD(82 , 5694.89 , 5695.16 , 5694.89 , 5694.61 , "$" , new Date(1508188899007L)));
+        list.add(new USD(83 , 5715.38 , 5716.05 , 5715.38 , 5714.7 , "$" , new Date(1508190699034L)));
+        list.add(new USD(84 , 5711.94 , 5713.48 , 5711.94 , 5710.4 , "$" , new Date(1508192499218L)));
+        list.add(new USD(85 , 5708.22 , 5708.65 , 5708.22 , 5707.78 , "$" , new Date(1508194299032L)));
+        list.add(new USD(86 , 5783.9 , 5784.4 , 5783.9 , 5783.4 , "$" , new Date(1508196099025L)));
+        list.add(new USD(87 , 5757.94 , 5758.56 , 5757.94 , 5757.32 , "$" , new Date(1508197899015L)));
+        list.add(new USD(88 , 5766.68 , 5767.26 , 5766.68 , 5766.11 , "$" , new Date(1508199699017L)));
+        list.add(new USD(89 , 5755.38 , 5755.81 , 5755.38 , 5754.94 , "$" , new Date(1508201499038L)));
+        list.add(new USD(90 , 5751.66 , 5752.39 , 5751.66 , 5750.93 , "$" , new Date(1508203300038L)));
+        list.add(new USD(91 , 5647.12 , 5647.57 , 5647.12 , 5646.66 , "$" , new Date(1508205100048L)));
+        list.add(new USD(92 , 5644.02 , 5644.26 , 5644.02 , 5643.78 , "$" , new Date(1508206899050L)));
+        list.add(new USD(93 , 5634.96 , 5636.11 , 5634.96 , 5633.81 , "$" , new Date(1508208699051L)));
+        list.add(new USD(94 , 5641.8 , 5642.84 , 5641.8 , 5640.76 , "$" , new Date(1508209088352L)));
+        list.add(new USD(95 , 5632.38 , 5633.01 , 5632.38 , 5631.74 , "$" , new Date(1508209415745L)));
+        list.add(new USD(96 , 5639.19 , 5639.32 , 5639.19 , 5639.07 , "$" , new Date(1508210499002L)));
+        list.add(new USD(97 , 5627.59 , 5627.69 , 5627.59 , 5627.48 , "$" , new Date(1508211465911L)));
+        list.add(new USD(98 , 5644.13 , 5644.24 , 5644.13 , 5644.02 , "$" , new Date(1508212299990L)));
+        list.add(new USD(99 , 5652.58 , 5653.59 , 5652.58 , 5651.58 , "$" , new Date(1508214102320L)));
+        list.add(new USD(100 , 5651.38 , 5652.35 , 5651.38 , 5650.41 , "$" , new Date(1508215899458L)));
+        list.add(new USD(101 , 5624.18 , 5624.98 , 5624.18 , 5623.38 , "$" , new Date(1508217699253L)));
+        list.add(new USD(102 , 5627.26 , 5628.02 , 5627.26 , 5626.5 , "$" , new Date(1508219499171L)));
+        list.add(new USD(103 , 5641.49 , 5641.98 , 5641.49 , 5640.99 , "$" , new Date(1508221299242L)));
+        list.add(new USD(104 , 5671.16 , 5672.71 , 5671.16 , 5669.61 , "$" , new Date(1508223099158L)));
+        list.add(new USD(105 , 5663.03 , 5664.29 , 5663.03 , 5661.76 , "$" , new Date(1508224899207L)));
+        list.add(new USD(106 , 5655.38 , 5655.99 , 5655.38 , 5654.76 , "$" , new Date(1508226699238L)));
+        list.add(new USD(107 , 5660.56 , 5661.26 , 5660.56 , 5659.86 , "$" , new Date(1508228499245L)));
+        list.add(new USD(108 , 5674.23 , 5674.87 , 5674.23 , 5673.6 , "$" , new Date(1508230299047L)));
+        list.add(new USD(109 , 5675.05 , 5675.74 , 5675.05 , 5674.35 , "$" , new Date(1508232099056L)));
+        list.add(new USD(110 , 5670.46 , 5671.3 , 5670.46 , 5669.62 , "$" , new Date(1508233899287L)));
+        list.add(new USD(111 , 5671.54 , 5672.09 , 5671.54 , 5670.99 , "$" , new Date(1508235699430L)));
+        list.add(new USD(112 , 5672.19 , 5673.07 , 5672.19 , 5671.31 , "$" , new Date(1508237499339L)));
+        list.add(new USD(113 , 5637.28 , 5637.75 , 5637.28 , 5636.81 , "$" , new Date(1508239299074L)));
+        list.add(new USD(114 , 5556.99 , 5557.95 , 5556.99 , 5556.02 , "$" , new Date(1508241099043L)));
+        list.add(new USD(115 , 5523.51 , 5524.71 , 5523.51 , 5522.3 , "$" , new Date(1508242899045L)));
+        list.add(new USD(116 , 5553.22 , 5554.06 , 5553.22 , 5552.37 , "$" , new Date(1508244248023L)));
+        list.add(new USD(117 , 5565.37 , 5566.12 , 5565.37 , 5564.63 , "$" , new Date(1508244699084L)));
+        list.add(new USD(118 , 5567.81 , 5568.15 , 5567.81 , 5567.46 , "$" , new Date(1508246499170L)));
+        list.add(new USD(119 , 5587.26 , 5587.53 , 5587.26 , 5586.99 , "$" , new Date(1508248299091L)));
+        list.add(new USD(120 , 5607.05 , 5607.38 , 5607.05 , 5606.72 , "$" , new Date(1508250099078L)));
+        list.add(new USD(121 , 5606.0 , 5606.64 , 5606.0 , 5605.37 , "$" , new Date(1508250462638L)));
+        list.add(new USD(122 , 5595.6 , 5596.25 , 5595.6 , 5594.94 , "$" , new Date(1508251899410L)));
+        list.add(new USD(123 , 5570.6 , 5571.31 , 5570.6 , 5569.89 , "$" , new Date(1508252312600L)));
+        list.add(new USD(124 , 5568.65 , 5569.28 , 5568.65 , 5568.02 , "$" , new Date(1508253699019L)));
+        list.add(new USD(125 , 5575.71 , 5576.54 , 5575.71 , 5574.88 , "$" , new Date(1508253960345L)));
+        list.add(new USD(126 , 5587.06 , 5587.6 , 5587.06 , 5586.52 , "$" , new Date(1508255499045L)));
+        list.add(new USD(127 , 5585.96 , 5586.54 , 5585.96 , 5585.38 , "$" , new Date(1508257299111L)));
+        list.add(new USD(128 , 5579.93 , 5580.61 , 5579.93 , 5579.25 , "$" , new Date(1508259099058L)));
+        list.add(new USD(129 , 5580.71 , 5582.49 , 5580.71 , 5578.94 , "$" , new Date(1508260899089L)));
+        list.add(new USD(130 , 5628.74 , 5629.41 , 5628.74 , 5628.06 , "$" , new Date(1508262699148L)));
+        list.add(new USD(131 , 5627.74 , 5628.72 , 5627.74 , 5626.76 , "$" , new Date(1508264499229L)));
+        list.add(new USD(132 , 5630.93 , 5631.79 , 5630.93 , 5630.07 , "$" , new Date(1508266299044L)));
+        list.add(new USD(133 , 5615.74 , 5615.94 , 5615.74 , 5615.53 , "$" , new Date(1508268099007L)));
         return list;
     }
 }

@@ -5,8 +5,9 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 
 import io.realm.Realm;
+import ru.savchenko.andrey.blockchain.di.ComponentManager;
 import ru.savchenko.andrey.blockchain.network.RequestManager;
-import ru.savchenko.andrey.blockchain.services.UpdateExchangeService;
+import ru.savchenko.andrey.blockchain.services.exchange.UpdateExchangeService;
 import ru.savchenko.andrey.blockchain.storage.Prefs;
 
 /**
@@ -23,5 +24,6 @@ public class App extends Application {
         Realm.init(this);
         Prefs.init(this);
         startService(UpdateExchangeService.newIntent(this));
+        ComponentManager.init();
     }
 }

@@ -20,7 +20,7 @@ import butterknife.OnClick;
 import ru.savchenko.andrey.blockchain.R;
 import ru.savchenko.andrey.blockchain.base.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
-import ru.savchenko.andrey.blockchain.services.UpdateExchangeService;
+import ru.savchenko.andrey.blockchain.services.exchange.UpdateExchangeService;
 import ru.savchenko.andrey.blockchain.storage.Prefs;
 
 /**

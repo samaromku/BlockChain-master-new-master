@@ -25,7 +25,7 @@ import ru.savchenko.andrey.blockchain.R;
 import ru.savchenko.andrey.blockchain.adapters.USDAdapter;
 import ru.savchenko.andrey.blockchain.base.BaseActivity;
 import ru.savchenko.andrey.blockchain.base.BaseRepository;
-import ru.savchenko.andrey.blockchain.dialogs.BuyOrSellDialog;
+import ru.savchenko.andrey.blockchain.dialogs.buyorsell.BuyOrSellDialog;
 import ru.savchenko.andrey.blockchain.dialogs.DateDialog;
 import ru.savchenko.andrey.blockchain.dialogs.SettingsDialog;
 import ru.savchenko.andrey.blockchain.entities.USD;
@@ -34,6 +34,7 @@ import ru.savchenko.andrey.blockchain.interfaces.OnRefreshAdapter;
 import ru.savchenko.andrey.blockchain.interfaces.SetDataFromDialog;
 import ru.savchenko.andrey.blockchain.network.RequestManager;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
+import ru.savchenko.andrey.blockchain.storage.Utils;
 
 import static ru.savchenko.andrey.blockchain.storage.Const.USD_ID;
 
@@ -118,7 +119,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
         rvExchange.addItemDecoration(dividerItemDecoration);
         adapter = new USDAdapter();
         adapter.setClickListener(this);
-        usds = new BaseRepository<>(USD.class).getAll();
+        usds = Utils.getUSDListByDate(new Date());
         new USDRepository().addChangeListener(adapter, rvExchange);
         adapter.setDataList(usds);
         rvExchange.setAdapter(adapter);

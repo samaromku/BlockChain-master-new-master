@@ -13,6 +13,16 @@ public class MoneyCount extends RealmObject{
     private int id;
     private Double usdCount;
     private Double bitCoinCount;
+    private boolean buyOrSell;
+
+    public boolean isBuyOrSell() {
+        return buyOrSell;
+    }
+
+    public void setBuyOrSell(boolean buyOrSell) {
+        Realm.getDefaultInstance().executeTransaction(realm -> this.buyOrSell = buyOrSell);
+        Realm.getDefaultInstance().close();
+    }
 
     public int getId() {
         return id;
@@ -50,6 +60,7 @@ public class MoneyCount extends RealmObject{
                 "id=" + id +
                 ", usdCount=" + usdCount +
                 ", bitCoinCount=" + bitCoinCount +
+                ", buyOrSell=" + buyOrSell +
                 '}';
     }
 
