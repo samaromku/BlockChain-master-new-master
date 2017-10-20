@@ -28,6 +28,18 @@ public class USD extends RealmObject {
     private String mSymbol;
     private Date date;
     private int buyOrSell;
+    private Double buyOrSelled;
+
+    public Double getBuyOrSelled() {
+        return buyOrSelled;
+    }
+
+    public void setBuyOrSelled(Double buyOrSelled) {
+        Realm.getDefaultInstance().executeTransaction(realm -> {
+            this.buyOrSelled = buyOrSelled;
+        });
+        Realm.getDefaultInstance().close();
+    }
 
     public int getBuyOrSell() {
         return buyOrSell;
@@ -104,18 +116,21 @@ public class USD extends RealmObject {
                 ", mSymbol='" + mSymbol + '\'' +
                 ", date=" + date +
                 ", buyOrSell=" + buyOrSell +
+                ", buyOrSelled=" + buyOrSelled +
                 '}';
     }
 
     public String addIntList() {
         return "list.add(new USD("
-                + id + " , "
-                + m5m + " , "
-                + mBuy + " , "
-                + mLast + " , "
-                + mSell + " , "
-                + "\"" + mSymbol + "\"" +" , "
-                + "new Date(" + date.getTime() + "L)" +
+                + id + ", "
+                + m5m + ", "
+                + mBuy + ", "
+                + mLast + ", "
+                + mSell + ", "
+                + "\"" + mSymbol + "\"" +", "
+                + "new Date(" + date.getTime() + "L)," +
+                + buyOrSell + ", "
+                + buyOrSelled +
                 "));";
     }
 
@@ -130,5 +145,17 @@ public class USD extends RealmObject {
         this.mSell = mSell;
         this.mSymbol = mSymbol;
         this.date = date;
+    }
+
+    public USD(int id, Double m5m, Double mBuy, Double mLast, Double mSell, String mSymbol, Date date, int buyOrSell, Double buyOrSelled) {
+        this.id = id;
+        this.m5m = m5m;
+        this.mBuy = mBuy;
+        this.mLast = mLast;
+        this.mSell = mSell;
+        this.mSymbol = mSymbol;
+        this.date = date;
+        this.buyOrSell = buyOrSell;
+        this.buyOrSelled = buyOrSelled;
     }
 }

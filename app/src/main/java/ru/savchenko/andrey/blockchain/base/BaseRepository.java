@@ -43,6 +43,7 @@ public class BaseRepository<T extends RealmObject> {
 
     public T getItem() {
         T t = realmInstance().where(type).findFirst();
+        Log.i(TAG, "getItem: " +t);
         realmInstance().close();
         return t;
     }

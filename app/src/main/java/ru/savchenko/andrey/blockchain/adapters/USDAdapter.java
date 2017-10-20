@@ -37,11 +37,18 @@ public class USDAdapter extends ru.savchenko.andrey.blockchain.base.BaseAdapter<
         return new USDViewHolder(view);
     }
 
-    class USDViewHolder extends BaseViewHolder<USD>{
-        @BindView(R.id.tvActualPrice)TextView tvActualPrice;
-        @BindView(R.id.tvTime)TextView tvTime;
-        @BindView(R.id.llExchange)LinearLayout llExchange;
-        @BindView(R.id.ivBuyOrSell)ImageView ivBuyOrSell;
+    class USDViewHolder extends BaseViewHolder<USD> {
+        @BindView(R.id.tvActualPrice)
+        TextView tvActualPrice;
+        @BindView(R.id.tvTime)
+        TextView tvTime;
+        @BindView(R.id.llExchange)
+        LinearLayout llExchange;
+        @BindView(R.id.ivBuyOrSell)
+        ImageView ivBuyOrSell;
+        @BindView(R.id.tvBuyOrSelt)
+        TextView tvBuyOrSelt;
+
 
         public USDViewHolder(View itemView) {
             super(itemView);
@@ -54,17 +61,19 @@ public class USDAdapter extends ru.savchenko.andrey.blockchain.base.BaseAdapter<
             tvActualPrice.setText(String.valueOf(usd.getLast()));
             tvTime.setText(new SimpleDateFormat("yyyy.MM.dd HH:mm").format(usd.getDate()));
             int status = usd.getBuyOrSell();
-             if(status==SELL_OPERATION){
+            if (status == SELL_OPERATION) {
                 ivBuyOrSell.setVisibility(View.VISIBLE);
                 ivBuyOrSell.setBackgroundResource(R.drawable.sell);
-            }else if(status==BUY_OPERATION){
+                tvBuyOrSelt.setText("-" + Utils.setBuyOrSold(usd.getBuyOrSelled()));
+            } else if (status == BUY_OPERATION) {
                 ivBuyOrSell.setVisibility(View.VISIBLE);
                 ivBuyOrSell.setBackgroundResource(R.drawable.buy);
-            }else {
+                tvBuyOrSelt.setText(Utils.setBuyOrSold(usd.getBuyOrSelled()));
+            } else {
                 ivBuyOrSell.setVisibility(View.INVISIBLE);
             }
 
-            switch (Utils.getProfit(usd)){
+            switch (Utils.getProfit(usd)) {
                 case BEST:
                     llExchange.setBackgroundResource(R.drawable.gradient_five);
                     break;

@@ -82,7 +82,7 @@ public class SettingsDialog extends DialogFragment {
         sbInterval.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
+                tvIntervalValue.setText(String.format(minutes, i));
             }
 
             @Override

@@ -43,6 +43,7 @@ import ru.savchenko.andrey.blockchain.storage.Utils;
 
 public class BuyOrSellDialog extends DialogFragment implements BuyOrSellView{
     @BindView(R.id.tvBuyOrSell)TextView tvBuyOrSell;
+    @BindView(R.id.tvMoneyRest)TextView tvMoneyRest;
     @BindView(R.id.rlDiagram)RelativeLayout rlDiagram;
     @BindView(R.id.btnOk)Button btnOk;
     @BindView(R.id.btnCancel)Button btnCancel;
@@ -100,10 +101,16 @@ public class BuyOrSellDialog extends DialogFragment implements BuyOrSellView{
     }
 
     @Override
+    public void setMoneyRest(String moneyRest) {
+        tvMoneyRest.setText(moneyRest);
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         presenter = new BuyOrSellPresenter(this);
+        presenter.setUSDRest();
         btnOk.setText("Продать B");
         btnCancel.setText("Продать $");
         tvBuyOrSell.setText(Utils.getBestAndWorstString(usd));
@@ -155,9 +162,11 @@ public class BuyOrSellDialog extends DialogFragment implements BuyOrSellView{
         data = new LineChartData(lines);
 
         Axis distanceAxis = new Axis();
-        distanceAxis.setName("Время");
+        String todayDate = new SimpleDateFormat("yyyy MMM dd").format(new USDRepository().getLastUSD().getDate());
+        distanceAxis.setName("Дата " + todayDate);
         distanceAxis.setTextColor(ChartUtils.COLOR_ORANGE);
 //        distanceAxis.setMaxLabelChars(4);
+
 //        distanceAxis.setFormatter(new SimpleAxisValueFormatter().setAppendedText("мин".toCharArray()));
         distanceAxis.setHasLines(true);
         distanceAxis.setHasTiltedLabels(true);

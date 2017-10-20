@@ -20,6 +20,6 @@ public class ExchangePresenter {
     }
     public void sellUSD(){
         exchangeInteractor.buyOrSellMethod()
-            .subscribe(moneyCount -> view.showNotify(moneyCount));
+            .subscribe();
     }
 }

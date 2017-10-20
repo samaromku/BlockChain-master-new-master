@@ -12,4 +12,6 @@ public interface BuyOrSellView {
     void makeToast(String text);
 
     void refreshAdapter();
+
+    void setMoneyRest(String moneyRest);
 }

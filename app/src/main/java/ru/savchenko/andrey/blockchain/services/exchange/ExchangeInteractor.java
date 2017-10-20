@@ -1,5 +1,7 @@
 package ru.savchenko.andrey.blockchain.services.exchange;
 
+import android.util.Log;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -13,6 +15,9 @@ import ru.savchenko.andrey.blockchain.dialogs.buyorsell.BuyOrSellInteractor;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
+import ru.savchenko.andrey.blockchain.storage.Utils;
+
+import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
 
 /**
  * Created by Andrey on 17.10.2017.
@@ -25,31 +30,65 @@ public class ExchangeInteractor {
 
 
     @Provides
-    ExchangeInteractor interactor(){
+    ExchangeInteractor interactor() {
         ComponentManager.getBuyOrSellComponent().inject(this);
         return this;
     }
 
-    Observable<MoneyCount> buyOrSellMethod(){
-        if(buyOrSell()){
+    Observable<MoneyCount> buyOrSellMethod() {
+        int buyOrSell = otherValues();
+        if(Utils.saver()==-1){
             moneyCount.setBuyOrSell(true);
             return interactor.sellUSDInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
-        }else {
+        }else if(Utils.saver()==1){
             moneyCount.setBuyOrSell(false);
             return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
         }
+        if (buyOrSell == -1) {
+            moneyCount.setBuyOrSell(true);
+            return interactor.sellUSDInteractor(moneyCount.getUsdCount() * 0.5, moneyCount.getBitCoinCount());
+        } else if (buyOrSell == 1) {
+            moneyCount.setBuyOrSell(false);
+            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount() * 0.5);
+        }
+        return Observable.empty();
     }
 
-    private boolean buyOrSell() {
-        List<USD> lastValues = new USDRepository().getLastThreeValues();
+    private int buyOrSell() {
+        List<USD> lastValues = new USDRepository().getLastFiveValues();
         Double firstFromLast = lastValues.get(0).getLast();
         Double secondFromLast = lastValues.get(1).getLast();
         Double thirdFromLast = lastValues.get(2).getLast();
-        if ((firstFromLast > secondFromLast) && (secondFromLast > thirdFromLast)){
-            return false;
-        }else {
-            return true;
+        Double fourthFromLast = lastValues.get(3).getLast();
+        Log.i(TAG, "buyOrSell: " + firstFromLast + " " + secondFromLast + " " + thirdFromLast + " " + fourthFromLast);
+
+        if ((firstFromLast > secondFromLast) && (secondFromLast > thirdFromLast) && (fourthFromLast > thirdFromLast)) {
+            Log.i(TAG, "first condition");
+            return -1;
+        } else if ((fourthFromLast > thirdFromLast) && (thirdFromLast > secondFromLast) && (firstFromLast > secondFromLast)) {
+            Log.i(TAG, "second condition");
+            return 1;
         }
+        return 0;
+    }
+
+    //20 $ в день с 1000$
+    private int otherValues() {
+        List<USD> lastValues = new USDRepository().getLastFiveValues();
+        Double firstFromLast = lastValues.get(0).getLast();
+        Double secondFromLast = lastValues.get(1).getLast();
+        Double thirdFromLast = lastValues.get(2).getLast();
+        Double fourthFromLast = lastValues.get(3).getLast();
+        Log.i(TAG, "buyOrSell: " + firstFromLast + " " + secondFromLast + " " + thirdFromLast + " " + fourthFromLast);
+
+        if ((fourthFromLast > thirdFromLast) && (thirdFromLast > secondFromLast) && (firstFromLast > secondFromLast)) {
+            Log.i(TAG, "first condition");
+            return 1;
+        } else if ((fourthFromLast < thirdFromLast) && (thirdFromLast < secondFromLast) && (firstFromLast < secondFromLast)) {
+            Log.i(TAG, "second condition");
+            return -1;
+        }
+        return 0;
     }
 
 }

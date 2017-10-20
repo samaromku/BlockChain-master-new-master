@@ -18,6 +18,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -28,6 +29,7 @@ import ru.savchenko.andrey.blockchain.base.BaseRepository;
 import ru.savchenko.andrey.blockchain.dialogs.buyorsell.BuyOrSellDialog;
 import ru.savchenko.andrey.blockchain.dialogs.DateDialog;
 import ru.savchenko.andrey.blockchain.dialogs.SettingsDialog;
+import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.interfaces.OnItemClickListener;
 import ru.savchenko.andrey.blockchain.interfaces.OnRefreshAdapter;
@@ -48,6 +50,11 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
     USDAdapter adapter;
     private List<USD> usds;
 
+    @OnClick(R.id.fab)
+    void fabClick(){
+        rvExchange.smoothScrollToPosition(adapter.getItemCount());
+    }
+
     public static final String TAG = "MainActivity";
 
     @Override
@@ -56,6 +63,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         new BaseRepository<>(USD.class).addAll(new USDRepository().getUsdStartList());
+        initMoneyCount();
         initRv();
         int usdId = getIntent().getIntExtra(USD_ID, 0);
 
@@ -72,6 +80,14 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
                             adapter.notifyDataSetChanged();
                             srlRefresher.setRefreshing(false);
                         }, Throwable::printStackTrace));
+    }
+
+    private void initMoneyCount(){
+        MoneyCount moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
+        if(moneyCount==null){
+            moneyCount =new MoneyCount(1, (double)1000, (double)0);
+            new BaseRepository<>(MoneyCount.class).addItem(moneyCount);
+        }
     }
 
     @Override

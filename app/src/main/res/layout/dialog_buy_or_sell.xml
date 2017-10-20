@@ -18,11 +18,30 @@
         android:layout_height="300dp"
         android:padding="16dp" />
 
+    <TextView
+        android:id="@+id/tvRestText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chart"
+        android:text="@string/rest_usd"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_toRightOf="@+id/tvRestText"
+        android:layout_toEndOf="@+id/tvRestText"
+        android:id="@+id/tvMoneyRest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chart"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:textSize="18sp" />
+
     <LinearLayout
         android:id="@+id/llEditTexts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/chart"
+        android:layout_below="@+id/tvMoneyRest"
         android:orientation="horizontal">
 
         <EditText

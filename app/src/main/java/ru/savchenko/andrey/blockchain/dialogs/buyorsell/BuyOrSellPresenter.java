@@ -27,6 +27,8 @@ public class BuyOrSellPresenter {
                         view.refreshAdapter();
                         view.setTextUSD(String.valueOf(moneyCount.getUsdCount()));
                         view.setTextBTC(String.valueOf(moneyCount.getBitCoinCount()));
+                        interactor.setUSDRest()
+                                .subscribe(s -> view.setMoneyRest(s));
                     });
         }else {
             interactor.sellBTCInteractor(usdValue, btcValue)
@@ -35,8 +37,14 @@ public class BuyOrSellPresenter {
                         view.refreshAdapter();
                         view.setTextUSD(String.valueOf(moneyCount.getUsdCount()));
                         view.setTextBTC(String.valueOf(moneyCount.getBitCoinCount()));
+                        interactor.setUSDRest()
+                                .subscribe(s -> view.setMoneyRest(s));
                     });
         }
     }
 
+    void setUSDRest(){
+        interactor.setUSDRest()
+                .subscribe(s -> view.setMoneyRest(s));
+    }
 }
