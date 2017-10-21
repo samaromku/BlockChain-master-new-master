@@ -1,24 +1,28 @@
 package ru.savchenko.andrey.blockchain.services.exchange;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.concurrent.TimeUnit;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -26,6 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 import ru.savchenko.andrey.blockchain.R;
 import ru.savchenko.andrey.blockchain.activities.MainActivity;
 import ru.savchenko.andrey.blockchain.base.BaseRepository;
+import ru.savchenko.andrey.blockchain.entities.Exchange;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.network.RequestManager;
@@ -44,8 +49,37 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
     public static final String TAG = "UpdateExchangeService";
     private ExchangePresenter presenter = new ExchangePresenter(this);
 
+    private Observable<Exchange> intervalObs;
+    int count;
+
     public UpdateExchangeService() {
         super(TAG);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public static void setServiceAlarm(Context context, boolean isOn){
+        Intent i = newIntent(context);
+        PendingIntent pi = PendingIntent.getService(context, 0, i, 0);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if(isOn){
+            am.setRepeating(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime(),  getInterval() * 60000, pi);
+        }else{
+            am.cancel(pi);
+            pi.cancel();
+        }
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.i(TAG, "onCreate: ");
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.i(TAG, "onBind: ");
+        return super.onBind(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -54,19 +88,19 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
                 .addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy: ");
+        Intent restartService = new Intent("UpdateExchangeService");
+        sendBroadcast(restartService);
+    }
+
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-
-    }
-
-    private void intervalCheckLastThreeValues() {
-        Observable.interval(3, TimeUnit.MINUTES)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> {
-                    presenter.sellUSD();
-                });
+        Log.i(TAG, "onHandleIntent: ");
     }
 
     @Override
@@ -75,8 +109,7 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
     }
 
 
-
-    private int getInterval() {
+    private static int getInterval() {
         int interval = Prefs.getInterval();
         if (interval == 0) {
             return 15;
@@ -84,22 +117,45 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
             return interval;
         }
     }
+    
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void startRxInterval(){
+        RequestManager.getRetrofitService().getExchange()
+//        Observable.interval(10, TimeUnit.SECONDS)
+//                .flatMap(aLong -> RequestManager.getRetrofitService().getExchange())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(exchange -> {
+                    Log.i(TAG, "onStartCommand: " + exchange.getUSD() );
+                    int usdId = new USDRepository().writeIdDbReturnInteger(exchange.getUSD());
+                    if(usdId!=0) {
+                        sendNotify(exchange.getUSD(), usdId);
+                        presenter.sellUSD();
+                    }
+                }, Throwable::printStackTrace);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Observable.interval(getInterval(), TimeUnit.MINUTES)
-                .flatMap(aLong -> RequestManager.getRetrofitService().getExchange())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(exchange -> {
-                    Log.i(TAG, "onStartCommand: ");
-                    showNotify(new BaseRepository<>(MoneyCount.class).getItem());
-                    int usdId = new USDRepository().writeIdDbReturnInteger(exchange.getUSD());
-                    sendNotify(exchange.getUSD(), usdId);
-                    presenter.sellUSD();
-                }, Throwable::printStackTrace);
-        return Service.START_STICKY;
+        Log.i(TAG, "onStartCommand: " + " date " + new SimpleDateFormat("hh-mm-ss").format(new Date()));
+//        if(count==0) {
+        if(checkThreeMinutesPassed()) {
+            startRxInterval();
+        }
+//        }
+//        count = count + 1;
+        return Service.START_NOT_STICKY;
+    }
+
+    private boolean checkThreeMinutesPassed(){
+        USD last = new BaseRepository<>(USD.class).getLast();
+        Date lastDate = last.getDate();
+        Date now = new Date();
+        long diffMs = now.getTime() - lastDate.getTime();
+        long diffSec = diffMs / 1000;
+        long min = diffSec / 60;
+        return min > 3;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -108,9 +164,9 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
         Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, 1);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         String title;
-        if(moneyCount.isBuyOrSell()){
+        if (moneyCount.isBuyOrSell()) {
             title = "Покупка B";
-        }else {
+        } else {
             title = "Продажа B";
         }
 //        String title = Utils.getBestAndWorstString(usd);
@@ -127,13 +183,18 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
                 .setVibrate(new long[]{1000, 1000})
                 .setLights(Color.WHITE, 3000, 3000)
                 .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
-                ;
+                .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    @Override
+    public ComponentName startForegroundService(Intent service) {
+        Log.i(TAG, "startForegroundService: ");
+        return super.startForegroundService(service);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -143,17 +204,17 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
         Log.i(TAG, text);
         String title = "";
         int formula = Utils.otherValues();
-        if(formula==-1){
+        if (formula == -1) {
             title = "Продавай";
-        }else if(formula==1){
+        } else if (formula == 1) {
             title = "Покупай";
         }
         setNotify(title, text, usdId);
 
         int saver = Utils.saver();
-        if(saver==-1){
+        if (saver == -1) {
             title = "Резкий рост";
-        }else if(saver==1){
+        } else if (saver == 1) {
             title = "Резкое падение";
         }
         setNotify(title, text, usdId);
@@ -162,8 +223,8 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void setNotify(String title, String text, int usdId){
-        if(!TextUtils.isEmpty(title)){
+    private void setNotify(String title, String text, int usdId) {
+//        if (!TextUtils.isEmpty(title)) {
             Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, usdId);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -183,6 +244,6 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-        }
+//        }
     }
 }

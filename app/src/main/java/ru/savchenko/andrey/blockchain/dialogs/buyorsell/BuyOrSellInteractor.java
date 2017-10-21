@@ -14,6 +14,7 @@ import ru.savchenko.andrey.blockchain.storage.Utils;
 
 import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
 import static ru.savchenko.andrey.blockchain.storage.Const.BUY_OPERATION;
+import static ru.savchenko.andrey.blockchain.storage.Const.NO_OPERATION;
 import static ru.savchenko.andrey.blockchain.storage.Const.SELL_OPERATION;
 
 /**
@@ -69,5 +70,12 @@ public class BuyOrSellInteractor {
         } else {
             return Observable.empty();
         }
+    }
+
+    public Observable<MoneyCount>writeInDBWithoutChange(){
+        moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
+        USD lastUsd = new USDRepository().getLastUSD();
+        lastUsd.setBuyOrSell(NO_OPERATION);
+        return Observable.fromCallable(() -> moneyCount);
     }
 }

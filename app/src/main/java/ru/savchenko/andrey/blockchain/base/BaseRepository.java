@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.Sort;
 
 import static android.content.ContentValues.TAG;
 import static ru.savchenko.andrey.blockchain.storage.Const.ID;
@@ -52,6 +53,12 @@ public class BaseRepository<T extends RealmObject> {
         List<T> tList = realmInstance().where(type).findAll();
         realmInstance().close();
         return tList;
+    }
+
+    public T getLast(){
+        T t = realmInstance().where(type).findAllSorted(ID, Sort.DESCENDING).get(0);
+        realmInstance().close();
+        return t;
     }
 
     public T getItemById(int id) {

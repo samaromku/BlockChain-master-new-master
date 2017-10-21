@@ -1,6 +1,7 @@
 package ru.savchenko.andrey.blockchain.repositories;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +12,8 @@ import io.realm.Sort;
 import ru.savchenko.andrey.blockchain.base.BaseAdapter;
 import ru.savchenko.andrey.blockchain.base.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.USD;
+
+import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
 
 /**
  * Created by Andrey on 12.10.2017.
@@ -23,18 +26,26 @@ public class USDRepository {
 
     public void writeIdDb(USD usd){
         BaseRepository baseRepository = new BaseRepository<>(USD.class);
-        usd.setId(baseRepository.getMaxIdPlusOne());
-        usd.setDate(new Date());
-        baseRepository.addItem(usd);
+        USD lastUsd = (USD) baseRepository.getLast();
+        Log.i(TAG, "writeIdDb: " + lastUsd + " not last " + usd);
+        if(!lastUsd.getLast().equals(usd.getLast())) {
+            usd.setId(baseRepository.getMaxIdPlusOne());
+            usd.setDate(new Date());
+            baseRepository.addItem(usd);
+        }
     }
 
     public int writeIdDbReturnInteger(USD usd){
         BaseRepository baseRepository = new BaseRepository<>(USD.class);
         int maxId = baseRepository.getMaxIdPlusOne();
-        usd.setId(maxId);
-        usd.setDate(new Date());
-        baseRepository.addItem(usd);
-        return maxId;
+        USD lastUsd = (USD) baseRepository.getLast();
+        Log.i(TAG, "writeIdDbReturnInteger: " + lastUsd + " not last " + usd);
+        if(!lastUsd.getLast().equals(usd.getLast())) {
+            usd.setId(maxId);
+            usd.setDate(new Date());
+            baseRepository.addItem(usd);
+            return maxId;
+        }return 0;
     }
 
     public void addChangeListener(BaseAdapter adapter, RecyclerView rvExchange){

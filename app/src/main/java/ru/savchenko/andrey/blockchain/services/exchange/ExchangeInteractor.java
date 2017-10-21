@@ -51,7 +51,7 @@ public class ExchangeInteractor {
             moneyCount.setBuyOrSell(false);
             return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount() * 0.5);
         }
-        return Observable.empty();
+        return interactor.writeInDBWithoutChange();
     }
 
     private int buyOrSell() {
