@@ -18,6 +18,7 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -212,9 +213,9 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
         setNotify(title, text, usdId);
 
         int saver = Utils.saver();
-        if (saver == -1) {
+        if (saver == 1) {
             title = "Резкий рост";
-        } else if (saver == 1) {
+        } else if (saver == -1) {
             title = "Резкое падение";
         }
         setNotify(title, text, usdId);
@@ -224,7 +225,7 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void setNotify(String title, String text, int usdId) {
-//        if (!TextUtils.isEmpty(title)) {
+        if (!TextUtils.isEmpty(title)) {
             Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, usdId);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -244,6 +245,6 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-//        }
+        }
     }
 }

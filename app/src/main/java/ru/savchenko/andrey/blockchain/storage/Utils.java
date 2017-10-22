@@ -42,12 +42,13 @@ public class Utils {
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+//        int day = calendar.get(Calendar.DAY_OF_MONTH);
+//
+//        Date start = calendar.getTime();
+//        calendar.set(Calendar.DAY_OF_MONTH, day + 1);
+//        Date end = calendar.getTime();
 
-        Date start = calendar.getTime();
-        calendar.set(Calendar.DAY_OF_MONTH, day + 1);
-        Date end = calendar.getTime();
-        return new USDRepository().getUSDListByDate(start, end);
+        return new USDRepository().getUSDByCalendarOneDayForward(calendar);
     }
 
     public static int getProfit(USD usd){

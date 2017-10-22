@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -56,13 +57,23 @@ public class USDRepository {
         realmInstance().close();
     }
 
-    public List<USD>getUSDListByDate(Date start, Date end){
+    private List<USD>getUSDListByDate(Date start, Date end){
         List<USD>usds = realmInstance().where(USD.class)
                 .between("date", start, end)
                 .findAll();
         realmInstance().close();
         return usds;
     }
+
+    public List<USD> getUSDByCalendarOneDayForward(Calendar calendar){
+        Date start = calendar.getTime();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        calendar.set(Calendar.DAY_OF_MONTH, day + 1);
+        Date end = calendar.getTime();
+
+        return getUSDListByDate(start, end);
+    }
+
 
     public Integer getMaxLast(){
         int maxLast = realmInstance().where(USD.class)

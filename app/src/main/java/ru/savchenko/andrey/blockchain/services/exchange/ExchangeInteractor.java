@@ -15,7 +15,6 @@ import ru.savchenko.andrey.blockchain.dialogs.buyorsell.BuyOrSellInteractor;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
-import ru.savchenko.andrey.blockchain.storage.Utils;
 
 import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
 
@@ -37,13 +36,13 @@ public class ExchangeInteractor {
 
     Observable<MoneyCount> buyOrSellMethod() {
         int buyOrSell = otherValues();
-        if(Utils.saver()==-1){
-            moneyCount.setBuyOrSell(true);
-            return interactor.sellUSDInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
-        }else if(Utils.saver()==1){
-            moneyCount.setBuyOrSell(false);
-            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
-        }
+//        if(Utils.saver()==-1){
+//            moneyCount.setBuyOrSell(true);
+//            return interactor.sellUSDInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
+//        }else if(Utils.saver()==1){
+//            moneyCount.setBuyOrSell(false);
+//            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
+//        }
         if (buyOrSell == -1) {
             moneyCount.setBuyOrSell(true);
             return interactor.sellUSDInteractor(moneyCount.getUsdCount() * 0.5, moneyCount.getBitCoinCount());
