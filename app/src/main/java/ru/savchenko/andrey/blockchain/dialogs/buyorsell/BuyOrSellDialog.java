@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -32,6 +33,7 @@ import lecho.lib.hellocharts.view.LineChartView;
 import ru.savchenko.andrey.blockchain.R;
 import ru.savchenko.andrey.blockchain.base.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
+import ru.savchenko.andrey.blockchain.entities.MoneyScore;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.interfaces.OnRefreshAdapter;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
@@ -42,8 +44,11 @@ import ru.savchenko.andrey.blockchain.storage.Utils;
  */
 
 public class BuyOrSellDialog extends DialogFragment implements BuyOrSellView{
-    @BindView(R.id.tvBuyOrSell)TextView tvBuyOrSell;
+//    @BindView(R.id.tvBuyOrSell)TextView tvBuyOrSell;
+    @BindString(R.string.dollar_sign_format)String dollarSignFormat;
     @BindView(R.id.tvMoneyRest)TextView tvMoneyRest;
+    @BindView(R.id.tvMax)TextView tvMax;
+    @BindView(R.id.tvMin)TextView tvMin;
     @BindView(R.id.rlDiagram)RelativeLayout rlDiagram;
     @BindView(R.id.btnOk)Button btnOk;
     @BindView(R.id.btnCancel)Button btnCancel;
@@ -113,7 +118,7 @@ public class BuyOrSellDialog extends DialogFragment implements BuyOrSellView{
         presenter.setUSDRest();
         btnOk.setText("Продать B");
         btnCancel.setText("Продать $");
-        tvBuyOrSell.setText(Utils.getBestAndWorstString(usd));
+//        tvBuyOrSell.setText(Utils.getBestAndWorstString(usd));
         chart = view.findViewById(R.id.chart);
         generateTempoData();
         etBitcoin.setText(String.valueOf(moneyCount.getBitCoinCount()));
@@ -142,6 +147,9 @@ public class BuyOrSellDialog extends DialogFragment implements BuyOrSellView{
         values = new ArrayList<>();
         List<AxisValue>axisValues = new ArrayList<>();
         List<USD>usdList = Utils.getUSDListByDate(usd.getDate());
+        MoneyScore moneyScore = new USDRepository().getMaxToday(Utils.getCalendarByDate(usd.getDate()));
+        tvMax.setText(String.format(dollarSignFormat, Utils.getFormattedStringOfDouble(moneyScore.getMax())));
+        tvMin.setText(String.format(dollarSignFormat, Utils.getFormattedStringOfDouble(moneyScore.getMin())));
         for (int i = 0; i < usdList.size(); i++) {
             float rawHeight = (float) (usdList.get(i).getLast() + 0);
             float normalizedHeight = rawHeight * scale - sub;
@@ -162,7 +170,7 @@ public class BuyOrSellDialog extends DialogFragment implements BuyOrSellView{
         data = new LineChartData(lines);
 
         Axis distanceAxis = new Axis();
-        String todayDate = new SimpleDateFormat("yyyy MMM dd").format(new USDRepository().getLastUSD().getDate());
+        String todayDate = new SimpleDateFormat("yyyy MMM dd").format(usdList.get(0).getDate());
         distanceAxis.setName("Дата " + todayDate);
         distanceAxis.setTextColor(ChartUtils.COLOR_ORANGE);
 //        distanceAxis.setMaxLabelChars(4);

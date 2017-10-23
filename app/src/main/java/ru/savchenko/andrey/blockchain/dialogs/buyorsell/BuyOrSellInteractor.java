@@ -37,7 +37,7 @@ public class BuyOrSellInteractor {
         Double btcRest = moneyCount.getBitCoinCount();
         USD lastUsd = new USDRepository().getLastUSD();
         Double rest = usdRest + btcRest * lastUsd.getSell();
-        return Observable.fromCallable(() -> Utils.setBuyOrSold(rest));
+        return Observable.fromCallable(() -> Utils.getFormattedStringOfDouble(rest));
     }
 
     public Observable<MoneyCount> sellUSDInteractor(Double usdSize, Double btcSize) {

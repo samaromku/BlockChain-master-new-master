@@ -15,6 +15,7 @@ import ru.savchenko.andrey.blockchain.dialogs.buyorsell.BuyOrSellInteractor;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
+import ru.savchenko.andrey.blockchain.storage.Utils;
 
 import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
 
@@ -43,13 +44,23 @@ public class ExchangeInteractor {
 //            moneyCount.setBuyOrSell(false);
 //            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
 //        }
-        if (buyOrSell == -1) {
+        int trueSellOrBuy = Utils.reallyMoneyGetMax();
+        if(trueSellOrBuy == -1){
             moneyCount.setBuyOrSell(true);
-            return interactor.sellUSDInteractor(moneyCount.getUsdCount() * 0.5, moneyCount.getBitCoinCount());
-        } else if (buyOrSell == 1) {
+            return interactor.sellUSDInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
+        }else if(trueSellOrBuy==1){
             moneyCount.setBuyOrSell(false);
-            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount() * 0.5);
+            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
         }
+
+
+//        if (buyOrSell == -1) {
+//            moneyCount.setBuyOrSell(true);
+//            return interactor.sellUSDInteractor(moneyCount.getUsdCount() * 0.5, moneyCount.getBitCoinCount());
+//        } else if (buyOrSell == 1) {
+//            moneyCount.setBuyOrSell(false);
+//            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount() * 0.5);
+//        }
         return interactor.writeInDBWithoutChange();
     }
 
@@ -71,7 +82,7 @@ public class ExchangeInteractor {
         return 0;
     }
 
-    //20 $ в день с 1000$
+    //20 $ в день с 1000$ когда как....(
     private int otherValues() {
         List<USD> lastValues = new USDRepository().getLastFiveValues();
         Double firstFromLast = lastValues.get(0).getLast();
@@ -89,5 +100,4 @@ public class ExchangeInteractor {
         }
         return 0;
     }
-
 }

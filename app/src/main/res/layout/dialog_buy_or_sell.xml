@@ -5,17 +5,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tvBuyOrSell"
+    <LinearLayout
+        android:id="@+id/llMaxMin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        tools:text="Sellllllllllllllll!!!!" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/min"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:textSize="17sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/max"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMax"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:textSize="17sp" />
+
+
+
+    </LinearLayout>
+
 
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:layout_below="@+id/llMaxMin"
         android:padding="16dp" />
 
     <TextView
@@ -27,14 +66,14 @@
         android:textSize="18sp" />
 
     <TextView
-        android:layout_toRightOf="@+id/tvRestText"
-        android:layout_toEndOf="@+id/tvRestText"
         android:id="@+id/tvMoneyRest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/chart"
         android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp"
+        android:layout_toEndOf="@+id/tvRestText"
+        android:layout_toRightOf="@+id/tvRestText"
         android:textSize="18sp" />
 
     <LinearLayout

@@ -39,6 +39,8 @@ import ru.savchenko.andrey.blockchain.repositories.USDRepository;
 import ru.savchenko.andrey.blockchain.storage.Prefs;
 import ru.savchenko.andrey.blockchain.storage.Utils;
 
+import static ru.savchenko.andrey.blockchain.storage.Const.BUY_OPERATION;
+import static ru.savchenko.andrey.blockchain.storage.Const.SELL_OPERATION;
 import static ru.savchenko.andrey.blockchain.storage.Const.USD_ID;
 
 
@@ -200,23 +202,23 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void sendNotify(USD usd, int usdId) {
-        String text = "Закупочная " + usd.getBuy() + "$ 15 мин назад: " + usd.get5m();
+        String text = "Закупочная " + usd.getBuy();
 
         Log.i(TAG, text);
         String title = "";
-        int formula = Utils.otherValues();
-        if (formula == -1) {
-            title = "Продавай";
-        } else if (formula == 1) {
-            title = "Покупай";
-        }
-        setNotify(title, text, usdId);
+//        int formula = Utils.otherValues();
+//        if (formula == -1) {
+//            title = "Продавай";
+//        } else if (formula == 1) {
+//            title = "Покупай";
+//        }
+//        setNotify(title, text, usdId);
 
-        int saver = Utils.saver();
-        if (saver == 1) {
-            title = "Резкий рост";
-        } else if (saver == -1) {
-            title = "Резкое падение";
+        int saver = Utils.reallyMoneyGetMax();
+        if (saver == SELL_OPERATION) {
+            title = "Резкий рост B";
+        } else if (saver == BUY_OPERATION) {
+            title = "Резкое падение B";
         }
         setNotify(title, text, usdId);
 

@@ -8,13 +8,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import ru.savchenko.andrey.blockchain.entities.MoneyScore;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
 
 import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
 import static ru.savchenko.andrey.blockchain.storage.Const.BEST;
 import static ru.savchenko.andrey.blockchain.storage.Const.BUY;
+import static ru.savchenko.andrey.blockchain.storage.Const.BUY_OPERATION;
 import static ru.savchenko.andrey.blockchain.storage.Const.SELL;
+import static ru.savchenko.andrey.blockchain.storage.Const.SELL_OPERATION;
 import static ru.savchenko.andrey.blockchain.storage.Const.TERRIBLE;
 import static ru.savchenko.andrey.blockchain.storage.Const.WAIT;
 import static ru.savchenko.andrey.blockchain.storage.Const.WORST;
@@ -38,17 +41,15 @@ public class Utils {
     }
 
     public static List<USD>getUSDListByDate(Date date){
+        return new USDRepository().getUSDByCalendarOneDayForward(getCalendarByDate(date));
+    }
+
+    public static Calendar getCalendarByDate(Date date){
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
-//        int day = calendar.get(Calendar.DAY_OF_MONTH);
-//
-//        Date start = calendar.getTime();
-//        calendar.set(Calendar.DAY_OF_MONTH, day + 1);
-//        Date end = calendar.getTime();
-
-        return new USDRepository().getUSDByCalendarOneDayForward(calendar);
+        return calendar;
     }
 
     public static int getProfit(USD usd){
@@ -94,7 +95,7 @@ public class Utils {
         return 0;
     }
 
-    public static String setBuyOrSold(Double value){
+    public static String getFormattedStringOfDouble(Double value){
         if(value!=null) {
             DecimalFormat df = new DecimalFormat("#.##");
             return df.format(value);
@@ -130,5 +131,25 @@ public class Utils {
                 fourthFromLast < fiveFromLast) {
             return -1;
         }else return 0;
+    }
+
+    public static int reallyMoneyGetMax() {
+        USD lastUSD = new USDRepository().getLastUSD();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+//        MoneyScore todayMoneyScore = new USDRepository().getMaxToday(Utils.getCalendarByDate(calendar.getTime()));
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) - 1);
+        MoneyScore yesterdayScore = new USDRepository().getMaxToday(calendar);
+        if (lastUSD.getLast() > yesterdayScore.getMax()) {
+            //значит сегодняшний максимум превысил вчерашний нужно продавать биткоин
+            return BUY_OPERATION;
+        }
+        if (lastUSD.getLast() < yesterdayScore.getMin()) {
+            //значит сегодняшний минимкм упал ниже вчерашнего нужно покупать биткоин
+            return SELL_OPERATION;
+        }
+        return 0;
     }
 }

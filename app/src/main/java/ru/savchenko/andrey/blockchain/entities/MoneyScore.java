@@ -1,14 +1,11 @@
 package ru.savchenko.andrey.blockchain.entities;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Andrey on 22.10.2017.
  */
 
-public class MoneyScore extends RealmObject{
-    @PrimaryKey
+public class MoneyScore {
     private int id;
     private Double max;
     private Double min;

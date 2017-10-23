@@ -8,7 +8,10 @@
     <string name="minutes">%1$s мин.</string>
     <string name="demo_count">Демо счет:</string>
     <string name="dollar_sign">$</string>
+    <string name="dollar_sign_format">%1$s $</string>
     <string name="bitcoin_sign">B</string>
     <string name="send">Отправить</string>
     <string name="rest_usd">Остаток $</string>
+    <string name="max">Макс:</string>
+    <string name="min">Мин:</string>
 </resources>

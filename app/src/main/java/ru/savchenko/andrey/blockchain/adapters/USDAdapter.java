@@ -64,11 +64,11 @@ public class USDAdapter extends ru.savchenko.andrey.blockchain.base.BaseAdapter<
             if (status == SELL_OPERATION) {
                 ivBuyOrSell.setVisibility(View.VISIBLE);
                 ivBuyOrSell.setBackgroundResource(R.drawable.sell);
-                tvBuyOrSelt.setText("-" + Utils.setBuyOrSold(usd.getBuyOrSelled()));
+                tvBuyOrSelt.setText("-" + Utils.getFormattedStringOfDouble(usd.getBuyOrSelled()));
             } else if (status == BUY_OPERATION) {
                 ivBuyOrSell.setVisibility(View.VISIBLE);
                 ivBuyOrSell.setBackgroundResource(R.drawable.buy);
-                tvBuyOrSelt.setText(Utils.setBuyOrSold(usd.getBuyOrSelled()));
+                tvBuyOrSelt.setText(Utils.getFormattedStringOfDouble(usd.getBuyOrSelled()));
             } else {
                 ivBuyOrSell.setVisibility(View.INVISIBLE);
             }

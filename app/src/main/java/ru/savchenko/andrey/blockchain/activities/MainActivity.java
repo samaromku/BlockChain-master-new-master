@@ -158,10 +158,6 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day, 0, 0);
 
-//        Date start = calendar.getTime();
-//        calendar.set(Calendar.DAY_OF_MONTH, day + 1);
-//        Date end = calendar.getTime();
-
         Maybe.fromCallable(() -> new USDRepository().getUSDByCalendarOneDayForward(calendar))
                 .subscribe(usds1 -> {
                     usds = usds1;
