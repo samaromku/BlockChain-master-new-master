@@ -139,14 +139,14 @@ public class Utils {
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-//        MoneyScore todayMoneyScore = new USDRepository().getMaxToday(Utils.getCalendarByDate(calendar.getTime()));
+        MoneyScore todayMoneyScore = new USDRepository().getMaxToday(Utils.getCalendarByDate(calendar.getTime()));
         calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) - 1);
         MoneyScore yesterdayScore = new USDRepository().getMaxToday(calendar);
-        if (lastUSD.getLast() > yesterdayScore.getMax()) {
+        if (lastUSD.getLast() > yesterdayScore.getMax() && lastUSD.getLast().equals(todayMoneyScore.getMax())) {
             //значит сегодняшний максимум превысил вчерашний нужно продавать биткоин
             return BUY_OPERATION;
         }
-        if (lastUSD.getLast() < yesterdayScore.getMin()) {
+        if (lastUSD.getLast() < yesterdayScore.getMin() && lastUSD.getLast().equals(todayMoneyScore.getMin())) {
             //значит сегодняшний минимкм упал ниже вчерашнего нужно покупать биткоин
             return SELL_OPERATION;
         }
