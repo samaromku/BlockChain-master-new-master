@@ -132,7 +132,7 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
                     Log.i(TAG, "onStartCommand: " + exchange.getUSD() );
                     int usdId = new USDRepository().writeIdDbReturnInteger(exchange.getUSD());
                     if(usdId!=0) {
-                        sendNotify(exchange.getUSD(), usdId);
+//                        sendNotify(exchange.getUSD(), usdId);
                         presenter.sellUSD();
                     }
                 }, Throwable::printStackTrace);
@@ -153,12 +153,14 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
 
     private boolean checkThreeMinutesPassed(){
         USD last = new BaseRepository<>(USD.class).getLast();
-        Date lastDate = last.getDate();
-        Date now = new Date();
-        long diffMs = now.getTime() - lastDate.getTime();
-        long diffSec = diffMs / 1000;
-        long min = diffSec / 60;
-        return min > 3;
+        if(last!=null) {
+            Date lastDate = last.getDate();
+            Date now = new Date();
+            long diffMs = now.getTime() - lastDate.getTime();
+            long diffSec = diffMs / 1000;
+            long min = diffSec / 60;
+            return min > 3;
+        }return false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -166,70 +168,17 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
     public void showNotify(MoneyCount moneyCount) {
         Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, 1);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-        String title;
-        if (moneyCount.isBuyOrSell()) {
-            title = "Покупка B";
-        } else {
-            title = "Продажа B";
-        }
-//        String title = Utils.getBestAndWorstString(usd);
-        String text = "$ ост:" + moneyCount.getUsdCount() + "\nB ост:" + moneyCount.getBitCoinCount();
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
-                .setPriority(Notification.PRIORITY_MAX)
-                .setSmallIcon(R.drawable.ic_monetization)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setAutoCancel(true)
-                .setVibrate(new long[]{1000, 1000})
-                .setLights(Color.WHITE, 3000, 3000)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
-
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-    }
-
-    @Override
-    public ComponentName startForegroundService(Intent service) {
-        Log.i(TAG, "startForegroundService: ");
-        return super.startForegroundService(service);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void sendNotify(USD usd, int usdId) {
-        String text = "Закупочная " + usd.getBuy();
-
-        Log.i(TAG, text);
         String title = "";
-//        int formula = Utils.otherValues();
-//        if (formula == -1) {
-//            title = "Продавай";
-//        } else if (formula == 1) {
-//            title = "Покупай";
-//        }
-//        setNotify(title, text, usdId);
-
-        int saver = Utils.reallyMoneyGetMax();
+        int saver = Utils.previousMaxOrMin();
         if (saver == SELL_OPERATION) {
-            title = "Резкий рост B";
+            title = "Переломный момент, покупаем доллары";
         } else if (saver == BUY_OPERATION) {
-            title = "Резкое падение B";
+            title = "Переломный момент, продаем доллары";
         }
-        setNotify(title, text, usdId);
 
+        String text = "Закупочная " + new USDRepository().getLastUSD().getBuy();
 
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void setNotify(String title, String text, int usdId) {
-        if (!TextUtils.isEmpty(title)) {
-            Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, usdId);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        if(!TextUtils.isEmpty(title)) {
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                     //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
@@ -249,4 +198,60 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
             notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
         }
     }
+
+    @Override
+    public ComponentName startForegroundService(Intent service) {
+        Log.i(TAG, "startForegroundService: ");
+        return super.startForegroundService(service);
+    }
+
+//    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+//    private void sendNotify(USD usd, int usdId) {
+//        String text = "Закупочная " + usd.getBuy();
+//
+//        Log.i(TAG, text);
+//        String title = "";
+////        int formula = Utils.otherValues();
+////        if (formula == -1) {
+////            title = "Продавай";
+////        } else if (formula == 1) {
+////            title = "Покупай";
+////        }
+////        setNotify(title, text, usdId);
+//
+//        int saver = Utils.previousMaxOrMin();
+//        if (saver == SELL_OPERATION) {
+//            title = "Переломный момент, покупаем доллары";
+//        } else if (saver == BUY_OPERATION) {
+//            title = "Переломный момент, продаем доллары";
+//        }
+//        setNotify(title, text, usdId);
+//
+//
+//    }
+//
+//    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+//    private void setNotify(String title, String text, int usdId) {
+//        if (!TextUtils.isEmpty(title)) {
+//            Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, usdId);
+//            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+//            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+//                    //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
+//                    .setPriority(Notification.PRIORITY_MAX)
+//                    .setSmallIcon(R.drawable.ic_monetization)
+//                    .setContentTitle(title)
+//                    .setContentText(text)
+//                    .setAutoCancel(true)
+//                    .setVibrate(new long[]{1000, 1000})
+//                    .setLights(Color.WHITE, 3000, 3000)
+//                    .setSound(defaultSoundUri)
+//                    .setContentIntent(pendingIntent);
+//
+//            NotificationManager notificationManager =
+//                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+//        }
+//    }
 }

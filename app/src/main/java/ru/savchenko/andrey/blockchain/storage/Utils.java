@@ -49,6 +49,7 @@ public class Utils {
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
         return calendar;
     }
 
@@ -144,11 +145,34 @@ public class Utils {
         MoneyScore yesterdayScore = new USDRepository().getMaxToday(calendar);
         if (lastUSD.getLast() > yesterdayScore.getMax() && lastUSD.getLast().equals(todayMoneyScore.getMax())) {
             //значит сегодняшний максимум превысил вчерашний нужно продавать биткоин
-            return BUY_OPERATION;
+            return SELL_OPERATION;
         }
         if (lastUSD.getLast() < yesterdayScore.getMin() && lastUSD.getLast().equals(todayMoneyScore.getMin())) {
             //значит сегодняшний минимкм упал ниже вчерашнего нужно покупать биткоин
-            return SELL_OPERATION;
+            return BUY_OPERATION;
+        }
+        return 0;
+    }
+
+    public static int previousMaxOrMin(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        MoneyScore todayMoneyScore = new USDRepository().getMaxToday(calendar);
+        USD preLastUSD = new USDRepository().getPreLastUSD(calendar);
+        Log.i(TAG, "previousMaxOrMin: " + todayMoneyScore);
+        Log.i(TAG, "previousMaxOrMin: preLastUSD " + preLastUSD.getLast());
+        if(todayMoneyScore!=null){
+            if(todayMoneyScore.getMax().equals(preLastUSD.getLast())){
+                Log.i(TAG, "previousMaxOrMin: значит цена с максимума пошла на спад, надо продавать биткоин");
+                //значит цена с максимума пошла на спад, надо продавать биткоин
+                return SELL_OPERATION;
+            }else if(todayMoneyScore.getMin().equals(preLastUSD.getLast())){
+                Log.i(TAG, "previousMaxOrMin: значит цена с минимума пошла на повышение надо покупать биткоин");
+                //значит цена с минимума пошла на повышение надо покупать биткоин
+                return BUY_OPERATION;
+            }
         }
         return 0;
     }

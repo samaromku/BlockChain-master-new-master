@@ -36,6 +36,7 @@ import ru.savchenko.andrey.blockchain.interfaces.OnRefreshAdapter;
 import ru.savchenko.andrey.blockchain.interfaces.SetDataFromDialog;
 import ru.savchenko.andrey.blockchain.network.RequestManager;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
+import ru.savchenko.andrey.blockchain.storage.UsdArray;
 import ru.savchenko.andrey.blockchain.storage.Utils;
 
 import static ru.savchenko.andrey.blockchain.storage.Const.USD_ID;
@@ -62,7 +63,11 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, S
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        new BaseRepository<>(USD.class).addAll(new USDRepository().getUsdStartList());
+        BaseRepository<USD> baseRepository = new BaseRepository<>(USD.class);
+        if(baseRepository.getAll().isEmpty()) {
+            baseRepository.addAll(new UsdArray().usds());
+            baseRepository.addAll(new USDRepository().getUsdStartList());
+        }
         initMoneyCount();
         initRv();
         int usdId = getIntent().getIntExtra(USD_ID, 0);

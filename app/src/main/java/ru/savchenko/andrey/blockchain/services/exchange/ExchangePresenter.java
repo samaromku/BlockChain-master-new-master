@@ -11,15 +11,20 @@ import ru.savchenko.andrey.blockchain.dialogs.buyorsell.BuyOrSellInteractor;
 
 public class ExchangePresenter {
     private ExchangeView view;
-    @Inject BuyOrSellInteractor buyInteractor;
-    @Inject ExchangeInteractor exchangeInteractor;
+    @Inject
+    BuyOrSellInteractor buyInteractor;
+    @Inject
+    ExchangeInteractor exchangeInteractor;
 
-    public ExchangePresenter(ExchangeView view) {
+    ExchangePresenter(ExchangeView view) {
         this.view = view;
         ComponentManager.getBuyOrSellComponent().inject(this);
     }
-    public void sellUSD(){
+
+    void sellUSD() {
         exchangeInteractor.buyOrSellMethod()
-            .subscribe();
+                .subscribe(moneyCount -> {
+                    view.showNotify(moneyCount);
+                });
     }
 }

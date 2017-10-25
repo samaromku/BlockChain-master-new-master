@@ -41,6 +41,7 @@ public class BuyOrSellInteractor {
     }
 
     public Observable<MoneyCount> sellUSDInteractor(Double usdSize, Double btcSize) {
+        moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
         USD lastUsd = new USDRepository().getLastUSD();
         lastUsd.setBuyOrSell(SELL_OPERATION);
         if (usdSize > 0) {
@@ -57,6 +58,7 @@ public class BuyOrSellInteractor {
     }
 
     public Observable<MoneyCount> sellBTCInteractor(Double usdSize, Double btcSize) {
+        moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
         USD lastUsd = new USDRepository().getLastUSD();
         lastUsd.setBuyOrSell(BUY_OPERATION);
         if (btcSize > 0) {

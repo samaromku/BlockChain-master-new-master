@@ -56,7 +56,11 @@ public class BaseRepository<T extends RealmObject> {
     }
 
     public T getLast(){
-        T t = realmInstance().where(type).findAllSorted(ID, Sort.DESCENDING).get(0);
+        List<T>tList = realmInstance().where(type).findAllSorted(ID, Sort.DESCENDING);
+        T t = null;
+        if(!tList.isEmpty()){
+            t = tList.get(0);
+        }
         realmInstance().close();
         return t;
     }

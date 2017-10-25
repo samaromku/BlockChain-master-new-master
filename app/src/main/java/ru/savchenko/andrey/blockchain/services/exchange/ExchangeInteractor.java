@@ -24,7 +24,6 @@ import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
  */
 @Module
 public class ExchangeInteractor {
-    private MoneyCount moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
     @Inject
     BuyOrSellInteractor interactor;
 
@@ -36,7 +35,7 @@ public class ExchangeInteractor {
     }
 
     Observable<MoneyCount> buyOrSellMethod() {
-        int buyOrSell = otherValues();
+//        int buyOrSell = otherValues();
 //        if(Utils.saver()==-1){
 //            moneyCount.setBuyOrSell(true);
 //            return interactor.sellUSDInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
@@ -44,7 +43,9 @@ public class ExchangeInteractor {
 //            moneyCount.setBuyOrSell(false);
 //            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
 //        }
-        int trueSellOrBuy = Utils.reallyMoneyGetMax();
+        MoneyCount moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
+        int trueSellOrBuy = Utils.previousMaxOrMin();
+        Log.i(TAG, "buyOrSellMethod: " + trueSellOrBuy);
         if(trueSellOrBuy == -1){
             moneyCount.setBuyOrSell(true);
             return interactor.sellUSDInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
