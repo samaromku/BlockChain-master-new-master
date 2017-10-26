@@ -39,13 +39,13 @@
             android:layout_weight="2"
             android:gravity="center"
             android:textColor="@android:color/white"
-            tools:text="-200" />
+            tools:text="-2000" />
 
         <ImageView
             android:id="@+id/ivBuyOrSell"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1.5" />
 
     </LinearLayout>
 

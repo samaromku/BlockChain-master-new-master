@@ -48,8 +48,6 @@ public class SettingsDialog extends DialogFragment {
     void onBtnOk(){
         MoneyCount moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
         moneyCount.setUsdCount(Double.valueOf(etCount.getText().toString()));
-//        Prefs.writeCount(Integer.valueOf(etCount.getText().toString()));
-
         if(Prefs.getInterval()!=sbInterval.getProgress()) {
             Prefs.writeInterval(sbInterval.getProgress());
             Intent intent = new Intent(getActivity(), UpdateExchangeService.class);

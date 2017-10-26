@@ -1,5 +1,7 @@
 package ru.savchenko.andrey.blockchain.network;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -18,7 +20,10 @@ public class RequestManager {
     public static void init() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(logging).build();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .addNetworkInterceptor(new StethoInterceptor())
+                .build();
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)

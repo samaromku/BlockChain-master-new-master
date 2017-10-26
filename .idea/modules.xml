@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BlockChain.iml" filepath="$PROJECT_DIR$/BlockChain.iml" />
-      <module fileurl="file://$PROJECT_DIR$/BlockChain-master.iml" filepath="$PROJECT_DIR$/BlockChain-master.iml" />
+      <module fileurl="file://C:\Users\Andrey\Desktop\BlockChain-master-new-master\BlockChain.iml" filepath="C:\Users\Andrey\Desktop\BlockChain-master-new-master\BlockChain.iml" />
+      <module fileurl="file://C:\Users\Andrey\Desktop\BlockChain-master-new-master\BlockChain-master.iml" filepath="C:\Users\Andrey\Desktop\BlockChain-master-new-master\BlockChain-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/BlockChain-master-new-master.iml" filepath="$PROJECT_DIR$/BlockChain-master-new-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
