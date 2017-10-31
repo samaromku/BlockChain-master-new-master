@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -25,19 +24,19 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import io.reactivex.Observable;
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.savchenko.andrey.blockchain.R;
 import ru.savchenko.andrey.blockchain.activities.MainActivity;
-import ru.savchenko.andrey.blockchain.base.BaseRepository;
-import ru.savchenko.andrey.blockchain.entities.Exchange;
+import ru.savchenko.andrey.blockchain.di.ComponentManager;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
 import ru.savchenko.andrey.blockchain.network.RequestManager;
+import ru.savchenko.andrey.blockchain.repositories.BaseRepository;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
 import ru.savchenko.andrey.blockchain.storage.Prefs;
-import ru.savchenko.andrey.blockchain.storage.Utils;
 
 import static ru.savchenko.andrey.blockchain.storage.Const.BUY_OPERATION;
 import static ru.savchenko.andrey.blockchain.storage.Const.SELL_OPERATION;
@@ -50,13 +49,11 @@ import static ru.savchenko.andrey.blockchain.storage.Const.USD_ID;
 
 public class UpdateExchangeService extends IntentService implements ExchangeView {
     public static final String TAG = "UpdateExchangeService";
-    private ExchangePresenter presenter = new ExchangePresenter(this);
-
-    private Observable<Exchange> intervalObs;
-    int count;
+    @Inject ExchangePresenter presenter;
 
     public UpdateExchangeService() {
         super(TAG);
+        ComponentManager.getExchangeSubComponent(this).inject(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -70,19 +67,6 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
             am.cancel(pi);
             pi.cancel();
         }
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.i(TAG, "onCreate: ");
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.i(TAG, "onBind: ");
-        return super.onBind(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -169,10 +153,10 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
         Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, 1);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         String title = "";
-        int saver = Utils.previousMaxOrMin();
-        if (saver == SELL_OPERATION) {
+//        int saver = Utils.previousMaxOrMinFourHours();
+        if (moneyCount.isBuyOrSell() == SELL_OPERATION) {
             title = "Переломный момент, покупаем доллары";
-        } else if (saver == BUY_OPERATION) {
+        } else if (moneyCount.isBuyOrSell() == BUY_OPERATION) {
             title = "Переломный момент, продаем доллары";
         }
 
@@ -204,54 +188,4 @@ public class UpdateExchangeService extends IntentService implements ExchangeView
         Log.i(TAG, "startForegroundService: ");
         return super.startForegroundService(service);
     }
-
-//    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-//    private void sendNotify(USD usd, int usdId) {
-//        String text = "Закупочная " + usd.getBuy();
-//
-//        Log.i(TAG, text);
-//        String title = "";
-////        int formula = Utils.otherValues();
-////        if (formula == -1) {
-////            title = "Продавай";
-////        } else if (formula == 1) {
-////            title = "Покупай";
-////        }
-////        setNotify(title, text, usdId);
-//
-//        int saver = Utils.previousMaxOrMin();
-//        if (saver == SELL_OPERATION) {
-//            title = "Переломный момент, покупаем доллары";
-//        } else if (saver == BUY_OPERATION) {
-//            title = "Переломный момент, продаем доллары";
-//        }
-//        setNotify(title, text, usdId);
-//
-//
-//    }
-//
-//    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-//    private void setNotify(String title, String text, int usdId) {
-//        if (!TextUtils.isEmpty(title)) {
-//            Intent intent = new Intent(this, MainActivity.class).putExtra(USD_ID, usdId);
-//            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-//            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-//                    //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
-//                    .setPriority(Notification.PRIORITY_MAX)
-//                    .setSmallIcon(R.drawable.ic_monetization)
-//                    .setContentTitle(title)
-//                    .setContentText(text)
-//                    .setAutoCancel(true)
-//                    .setVibrate(new long[]{1000, 1000})
-//                    .setLights(Color.WHITE, 3000, 3000)
-//                    .setSound(defaultSoundUri)
-//                    .setContentIntent(pendingIntent);
-//
-//            NotificationManager notificationManager =
-//                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-//        }
-//    }
 }

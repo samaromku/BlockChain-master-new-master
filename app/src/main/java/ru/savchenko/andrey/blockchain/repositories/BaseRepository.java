@@ -1,4 +1,4 @@
-package ru.savchenko.andrey.blockchain.base;
+package ru.savchenko.andrey.blockchain.repositories;
 
 import android.util.Log;
 
@@ -14,8 +14,7 @@ import static ru.savchenko.andrey.blockchain.storage.Const.ID;
 /**
  * Created by Andrey on 09.10.2017.
  */
-
-public class BaseRepository<T extends RealmObject> {
+public class BaseRepository<T extends RealmObject> implements IBaseRepository<T>{
     private Class<T> type;
 
     public BaseRepository(Class<T> type) {

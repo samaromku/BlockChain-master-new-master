@@ -25,7 +25,7 @@ import io.reactivex.schedulers.Schedulers;
 import ru.savchenko.andrey.blockchain.R;
 import ru.savchenko.andrey.blockchain.adapters.USDAdapter;
 import ru.savchenko.andrey.blockchain.base.BaseActivity;
-import ru.savchenko.andrey.blockchain.base.BaseRepository;
+import ru.savchenko.andrey.blockchain.repositories.BaseRepository;
 import ru.savchenko.andrey.blockchain.dialogs.buyorsell.BuyOrSellDialog;
 import ru.savchenko.andrey.blockchain.dialogs.DateDialog;
 import ru.savchenko.andrey.blockchain.dialogs.SettingsDialog;

@@ -13,13 +13,13 @@ public class MoneyCount extends RealmObject{
     private int id;
     private Double usdCount;
     private Double bitCoinCount;
-    private boolean buyOrSell;
+    private int buyOrSell;
 
-    public boolean isBuyOrSell() {
+    public int isBuyOrSell() {
         return buyOrSell;
     }
 
-    public void setBuyOrSell(boolean buyOrSell) {
+    public void setBuyOrSell(int buyOrSell) {
         Realm.getDefaultInstance().executeTransaction(realm -> this.buyOrSell = buyOrSell);
         Realm.getDefaultInstance().close();
     }

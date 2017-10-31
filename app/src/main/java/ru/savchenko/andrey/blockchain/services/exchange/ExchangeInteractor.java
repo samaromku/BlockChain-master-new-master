@@ -6,32 +6,34 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.Module;
-import dagger.Provides;
 import io.reactivex.Observable;
-import ru.savchenko.andrey.blockchain.base.BaseRepository;
 import ru.savchenko.andrey.blockchain.di.ComponentManager;
 import ru.savchenko.andrey.blockchain.dialogs.buyorsell.BuyOrSellInteractor;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
+import ru.savchenko.andrey.blockchain.interfaces.IChecker;
+import ru.savchenko.andrey.blockchain.interfaces.IUSDRepository;
+import ru.savchenko.andrey.blockchain.repositories.IBaseRepository;
 import ru.savchenko.andrey.blockchain.repositories.USDRepository;
-import ru.savchenko.andrey.blockchain.storage.Utils;
 
 import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
+import static ru.savchenko.andrey.blockchain.storage.Const.NO_OPERATION;
 
 /**
  * Created by Andrey on 17.10.2017.
  */
-@Module
 public class ExchangeInteractor {
     @Inject
     BuyOrSellInteractor interactor;
+    IBaseRepository<MoneyCount>baseRepository;
+    IUSDRepository iusdRepository;
+    private IChecker checker;
 
-
-    @Provides
-    ExchangeInteractor interactor() {
-        ComponentManager.getBuyOrSellComponent().inject(this);
-        return this;
+    public ExchangeInteractor(IBaseRepository<MoneyCount> baseRepository, IUSDRepository iusdRepository, IChecker checker) {
+        this.baseRepository = baseRepository;
+        this.iusdRepository = iusdRepository;
+        this.checker = checker;
+        ComponentManager.getAppComponent().inject(this);
     }
 
     Observable<MoneyCount> buyOrSellMethod() {
@@ -43,15 +45,15 @@ public class ExchangeInteractor {
 //            moneyCount.setBuyOrSell(false);
 //            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
 //        }
-        MoneyCount moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
-        int trueSellOrBuy = Utils.previousMaxOrMin();
+        MoneyCount moneyCount = baseRepository.getItem();
+        int trueSellOrBuy = checker.previousMaxOrMinFourHours();
         Log.i(TAG, "buyOrSellMethod: " + trueSellOrBuy);
         if(trueSellOrBuy == -1){
-            moneyCount.setBuyOrSell(true);
-            return interactor.sellUSDInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
+            moneyCount.setBuyOrSell(-1);
+            return interactor.sellUSDInteractor(moneyCount.getUsdCount()*0.5, moneyCount.getBitCoinCount());
         }else if(trueSellOrBuy==1){
-            moneyCount.setBuyOrSell(false);
-            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount());
+            moneyCount.setBuyOrSell(1);
+            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount()*0.5);
         }
 
 
@@ -62,7 +64,14 @@ public class ExchangeInteractor {
 //            moneyCount.setBuyOrSell(false);
 //            return interactor.sellBTCInteractor(moneyCount.getUsdCount(), moneyCount.getBitCoinCount() * 0.5);
 //        }
-        return interactor.writeInDBWithoutChange();
+        return writeInDBWithoutChange();
+    }
+
+    public Observable<MoneyCount>writeInDBWithoutChange(){
+        MoneyCount moneyCount = baseRepository.getItem();
+        USD lastUsd = iusdRepository.getLastUSD();
+        iusdRepository.setBuyOrSell(lastUsd, NO_OPERATION);
+        return Observable.fromCallable(() -> moneyCount);
     }
 
     private int buyOrSell() {

@@ -18,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.savchenko.andrey.blockchain.R;
-import ru.savchenko.andrey.blockchain.base.BaseRepository;
+import ru.savchenko.andrey.blockchain.repositories.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.services.exchange.UpdateExchangeService;
 import ru.savchenko.andrey.blockchain.storage.Prefs;

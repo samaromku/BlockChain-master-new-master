@@ -14,7 +14,7 @@ public class BuyOrSellPresenter {
 
     public BuyOrSellPresenter(BuyOrSellView view) {
         this.view = view;
-        ComponentManager.getBuyOrSellComponent().inject(this);
+        ComponentManager.getAppComponent().inject(this);
     }
 
     public void sellUSD(String usdSize, String btcSize, boolean sellUSD){

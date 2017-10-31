@@ -31,7 +31,7 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 import ru.savchenko.andrey.blockchain.R;
-import ru.savchenko.andrey.blockchain.base.BaseRepository;
+import ru.savchenko.andrey.blockchain.repositories.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.MoneyScore;
 import ru.savchenko.andrey.blockchain.entities.USD;

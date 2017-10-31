@@ -13,12 +13,12 @@ public class ExchangePresenter {
     private ExchangeView view;
     @Inject
     BuyOrSellInteractor buyInteractor;
-    @Inject
-    ExchangeInteractor exchangeInteractor;
+    private ExchangeInteractor exchangeInteractor;
 
-    ExchangePresenter(ExchangeView view) {
+    public ExchangePresenter(ExchangeView view, ExchangeInteractor exchangeInteractor) {
         this.view = view;
-        ComponentManager.getBuyOrSellComponent().inject(this);
+        this.exchangeInteractor = exchangeInteractor;
+        ComponentManager.getAppComponent().inject(this);
     }
 
     void sellUSD() {

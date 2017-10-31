@@ -5,7 +5,8 @@ import android.util.Log;
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.Observable;
-import ru.savchenko.andrey.blockchain.base.BaseRepository;
+import ru.savchenko.andrey.blockchain.interfaces.IUSDRepository;
+import ru.savchenko.andrey.blockchain.repositories.BaseRepository;
 import ru.savchenko.andrey.blockchain.di.BuyOrSellScope;
 import ru.savchenko.andrey.blockchain.entities.MoneyCount;
 import ru.savchenko.andrey.blockchain.entities.USD;
@@ -29,6 +30,11 @@ public class BuyOrSellInteractor {
     BuyOrSellInteractor interactor() {
         return this;
     }
+    private IUSDRepository iusdRepository;
+
+    public BuyOrSellInteractor() {
+        this.iusdRepository = new USDRepository();
+    }
 
     Observable<String> setUSDRest() {
         moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
@@ -42,8 +48,8 @@ public class BuyOrSellInteractor {
 
     public Observable<MoneyCount> sellUSDInteractor(Double usdSize, Double btcSize) {
         moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
-        USD lastUsd = new USDRepository().getLastUSD();
-        lastUsd.setBuyOrSell(SELL_OPERATION);
+        USD lastUsd = iusdRepository.getLastUSD();
+        iusdRepository.setBuyOrSell(lastUsd, SELL_OPERATION);
         if (usdSize > 0) {
             lastUsd.setBuyOrSelled(usdSize);
             Double btcValue = btcSize + usdSize / lastUsd.getBuy();
@@ -59,8 +65,8 @@ public class BuyOrSellInteractor {
 
     public Observable<MoneyCount> sellBTCInteractor(Double usdSize, Double btcSize) {
         moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
-        USD lastUsd = new USDRepository().getLastUSD();
-        lastUsd.setBuyOrSell(BUY_OPERATION);
+        USD lastUsd = iusdRepository.getLastUSD();
+        iusdRepository.setBuyOrSell(lastUsd, BUY_OPERATION);
         if (btcSize > 0) {
             lastUsd.setBuyOrSelled(btcSize*lastUsd.getSell());
             Double usdValue = usdSize + btcSize * lastUsd.getSell();
@@ -76,8 +82,8 @@ public class BuyOrSellInteractor {
 
     public Observable<MoneyCount>writeInDBWithoutChange(){
         moneyCount = new BaseRepository<>(MoneyCount.class).getItem();
-        USD lastUsd = new USDRepository().getLastUSD();
-        lastUsd.setBuyOrSell(NO_OPERATION);
+        USD lastUsd = iusdRepository.getLastUSD();
+        iusdRepository.setBuyOrSell(lastUsd, NO_OPERATION);
         return Observable.fromCallable(() -> moneyCount);
     }
 }

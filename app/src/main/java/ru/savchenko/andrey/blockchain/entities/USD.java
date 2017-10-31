@@ -46,10 +46,7 @@ public class USD extends RealmObject {
     }
 
     public void setBuyOrSell(int buyOrSell) {
-        Realm.getDefaultInstance().executeTransaction(realm -> {
-            this.buyOrSell = buyOrSell;
-        });
-        Realm.getDefaultInstance().close();
+        this.buyOrSell = buyOrSell;
     }
 
     public Date getDate() {

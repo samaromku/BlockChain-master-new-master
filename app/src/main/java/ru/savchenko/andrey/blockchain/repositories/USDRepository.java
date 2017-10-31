@@ -12,9 +12,9 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.savchenko.andrey.blockchain.base.BaseAdapter;
-import ru.savchenko.andrey.blockchain.base.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.MoneyScore;
 import ru.savchenko.andrey.blockchain.entities.USD;
+import ru.savchenko.andrey.blockchain.interfaces.IUSDRepository;
 
 import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
 
@@ -22,7 +22,7 @@ import static ru.savchenko.andrey.blockchain.activities.MainActivity.TAG;
  * Created by Andrey on 12.10.2017.
  */
 
-public class USDRepository {
+public class USDRepository implements IUSDRepository{
     private Realm realmInstance() {
         return Realm.getDefaultInstance();
     }
@@ -77,8 +77,23 @@ public class USDRepository {
         return getUSDListByDate(start, end);
     }
 
+    public List<USD>getUSDFourHours(){
+        Calendar calendar = Calendar.getInstance();
+        Date end = calendar.getTime();
+        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY)-4);
+        Date start = calendar.getTime();
+        return getUSDListByDate(start, end);
+    }
+
     public MoneyScore getMaxToday(Calendar calendar) {
         RealmResults<USD> todayList = (RealmResults<USD>) getUSDByCalendarOneDayForward(calendar);
+        Double max = todayList.max("mLast").doubleValue();
+        Double min = todayList.min("mLast").doubleValue();
+        return new MoneyScore(1, max, min);
+    }
+
+    public MoneyScore getMaxFourHours(){
+        RealmResults<USD> todayList = (RealmResults<USD>) getUSDFourHours();
         Double max = todayList.max("mLast").doubleValue();
         Double min = todayList.min("mLast").doubleValue();
         return new MoneyScore(1, max, min);
@@ -138,6 +153,12 @@ public class USDRepository {
             usds.add(all.get(i));
         }
         return usds;
+    }
+
+    @Override
+    public void setBuyOrSell(USD lastUSD, int operation) {
+        realmInstance().executeTransaction(realm -> lastUSD.setBuyOrSell(operation));
+        realmInstance().close();
     }
 
     public List<USD> getUsdStartList() {

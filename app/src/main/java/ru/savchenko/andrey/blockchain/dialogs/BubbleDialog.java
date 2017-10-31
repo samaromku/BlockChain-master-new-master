@@ -22,7 +22,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.BubbleChartView;
 import lecho.lib.hellocharts.view.Chart;
 import ru.savchenko.andrey.blockchain.R;
-import ru.savchenko.andrey.blockchain.base.BaseRepository;
+import ru.savchenko.andrey.blockchain.repositories.BaseRepository;
 import ru.savchenko.andrey.blockchain.entities.USD;
 
 /**
